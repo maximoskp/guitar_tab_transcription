@@ -15,11 +15,15 @@ import pickle
 
 # %% 
 
-main_folder = 'TextoGP/gp_token_examples'
+main_folder = 'data/gp_token_examples'
+# main_folder = 'data/DadaGP-v1.1/DadaGP-v1.1'
 
 level_A_folders = os.listdir(main_folder)
 
 pieces_events = []
+
+max_pitch = -1
+min_pitch = 1000
 
 for level_A_folder in level_A_folders:
     level_A_path = os.path.join(main_folder, level_A_folder)
@@ -33,13 +37,17 @@ for level_A_folder in level_A_folders:
                     gpPieceEvent = gp2events.GPPieceEvents( os.path.join(level_B_path, file) )
                     if len(gpPieceEvent.track_events) > 0:
                         pieces_events.append( gpPieceEvent )
+                        if gpPieceEvent.max_pitch > max_pitch:
+                            max_pitch = gpPieceEvent.max_pitch
+                        if  gpPieceEvent.min_pitch < min_pitch:
+                            min_pitch = gpPieceEvent.min_pitch
 
 # %% 
 
-with open('filename.pickle', 'wb') as handle:
+with open('data' + os.sep + 'track_events.pickle', 'wb') as handle:
     pickle.dump(pieces_events, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-with open('filename.pickle', 'rb') as handle:
+with open('data' + os.sep + 'track_events.pickle', 'rb') as handle:
     b = pickle.load(handle)
 
 # %% 
