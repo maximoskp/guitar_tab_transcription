@@ -169,9 +169,15 @@ class GuitarTabDataset():
     # end constructor
     def add_matrices(self, r):
         # add from TrackRepresentation object
-        self.pianoroll_changes.append( np.concatenate( (np.zeros((r.pianoroll_changes.shape[0], self.history)), r.pianoroll_changes ), axis=1) )
-        self.tablature_changes.append( np.concatenate( (np.zeros((r.tablature_changes.shape[0], self.history)), r.tablature_changes ), axis=1) )
-        self.string_activation_changes.append( np.concatenate( (np.zeros((r.string_activation_changes.shape[0], self.history)), r.string_activation_changes ), axis=1) )
+        tmp_all_x = np.concatenate( (np.zeros((r.pianoroll_changes.shape[0], self.history)), r.pianoroll_changes ), axis=1)
+        tmp_x = tmp_all_x[:, self.history:]
+        for i in range(1, self.history+1, 1):
+            tmp_x = np.vstack( (tmp_x , tmp_all_x[:, self.history-i:-i]) )
+        self.pianoroll_changes.append( tmp_x )
+        self.tablature_changes.append( r.tablature_changes )
+        self.string_activation_changes.append( r.string_activation_changes )
+        # self.tablature_changes.append( np.concatenate( (np.zeros((r.tablature_changes.shape[0], self.history)), r.tablature_changes ), axis=1) )
+        # self.string_activation_changes.append( np.concatenate( (np.zeros((r.string_activation_changes.shape[0], self.history)), r.string_activation_changes ), axis=1) )
     # end add_matrices
     def load_data(self, task='string_activation', train_ratio=0.8,
                   validation=True, validation_ratio=0.2):
@@ -189,8 +195,10 @@ class GuitarTabDataset():
             x_valid = self.pianoroll_changes[train_idx-valid_idx:train_idx]
         x_train = self.pianoroll_changes[:train_idx-valid_idx]
         x_test = self.pianoroll_changes[train_idx:]
+        
         self.x_train = np.concatenate( x_train , axis=1 )
         self.x_test = np.concatenate( x_test , axis=1 )
+        
         if self.validation:
             self.x_valid = np.concatenate( x_valid , axis=1 )
         if self.task == 'string_activation':
@@ -198,14 +206,14 @@ class GuitarTabDataset():
         else:
             y = self.tablature_changes
         if self.validation:
-            self.y_valid = y[train_idx-valid_idx:train_idx]
+            y_valid = y[train_idx-valid_idx:train_idx]
         # self.y1 = y
         y_train = y[:train_idx-valid_idx]
         y_test = y[train_idx:]
         self.y_train = np.concatenate( y_train , axis=1 )
         self.y_test = np.concatenate( y_test , axis=1 )
         if self.validation:
-            self.y_valid = np.concatenate( x_valid , axis=1 )
+            self.y_valid = np.concatenate( y_valid , axis=1 )
         if self.validation:
             return [self.x_train, self.y_train, self.x_valid, self.y_valid, self.x_test, self.y_test]
         else:
