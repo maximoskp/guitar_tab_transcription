@@ -36,3 +36,17 @@ for p in pieces:
 
 with open('data' + os.sep + 'track_representations.pickle', 'wb') as handle:
     pickle.dump(track_representations, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+# %% 
+
+with open('data' + os.sep + 'track_representations.pickle', 'rb') as handle:
+    b = pickle.load(handle)
+
+# %% 
+
+dataset = gp2events.GuitarTabDataset()
+
+for r in b:
+    dataset.add_matrices(r)
+
+[x_train, y_train, x_valid, y_valid, x_test, y_test] = dataset.load_data()
