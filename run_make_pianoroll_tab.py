@@ -42,7 +42,7 @@ with open('data' + os.sep + 'track_representations.pickle', 'wb') as handle:
 with open('data' + os.sep + 'track_representations.pickle', 'rb') as handle:
     b = pickle.load(handle)
 
-# %% 
+# %% string activation
 
 dataset = gp2events.GuitarTabDataset()
 
@@ -50,3 +50,41 @@ for r in b:
     dataset.add_matrices(r)
 
 [x_train, y_train, x_valid, y_valid, x_test, y_test] = dataset.load_data()
+
+string_activation_dataset = {
+    'x_train': x_train,
+    'y_train': y_train,
+    'x_valid': x_valid,
+    'y_valid': y_valid,
+    'x_test': x_test,
+    'y_test': y_test,
+}
+
+with open('data' + os.sep + 'string_activation_dataset.pickle', 'wb') as handle:
+    pickle.dump(string_activation_dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+# %% 
+
+with open('data' + os.sep + 'string_activation_dataset.pickle', 'rb') as handle:
+    d = pickle.load(handle)
+
+# %% full tablature
+
+dataset = gp2events.GuitarTabDataset()
+
+for r in b:
+    dataset.add_matrices(r)
+
+[x_train, y_train, x_valid, y_valid, x_test, y_test] = dataset.load_data(task='tab')
+
+string_activation_dataset = {
+    'x_train': x_train,
+    'y_train': y_train,
+    'x_valid': x_valid,
+    'y_valid': y_valid,
+    'x_test': x_test,
+    'y_test': y_test,
+}
+
+with open('data' + os.sep + 'tablature_dataset.pickle', 'wb') as handle:
+    pickle.dump(string_activation_dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
