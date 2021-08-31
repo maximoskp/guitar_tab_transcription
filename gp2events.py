@@ -11,6 +11,33 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 
+def tabFrame2binary(t):
+    b = np.zeros(5*6)
+    for i in range(6):
+        s = np.binary_repr( t[i].astype(int) , width=5 )
+        b[i*5:i*5+5] = np.array(list(s), dtype=np.float32)
+    return b
+
+def tablature2binary(tablature):
+    b = np.zeros( (5*6 , tablature.shape[1]) )
+    for i in range(tablature.shape[1]):
+        b[:, i] = tabFrame2binary(tablature[:, i])
+    return b
+
+def bool2int(x):
+    y = 0
+    for i,j in enumerate(np.flip(x)):
+        y += j<<i
+    return y
+
+def binary2tablature(b):
+    t = np.zeros( (6, b.shape[1]) )
+    for i in range(b.shape[1]):
+        for j in range(6):
+            t[j,i] = bool2int( b[j*5:j*5+5, i].astype(int) )
+    t[ t==31 ] = -1
+    return t
+
 class GPPieceEvents:
     def __init__(self, file_path):
         song = gp.parse( file_path )
@@ -174,7 +201,7 @@ class GuitarTabDataset():
         for i in range(1, self.history+1, 1):
             tmp_x = np.vstack( (tmp_x , tmp_all_x[:, self.history-i:-i]) )
         self.pianoroll_changes.append( tmp_x )
-        self.tablature_changes.append( r.tablature_changes )
+        self.tablature_changes.append( tablature2binary(r.tablature_changes) )
         self.string_activation_changes.append( r.string_activation_changes )
         # self.tablature_changes.append( np.concatenate( (np.zeros((r.tablature_changes.shape[0], self.history)), r.tablature_changes ), axis=1) )
         # self.string_activation_changes.append( np.concatenate( (np.zeros((r.string_activation_changes.shape[0], self.history)), r.string_activation_changes ), axis=1) )
