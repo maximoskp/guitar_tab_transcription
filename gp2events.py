@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 
+# binary tab -----------------------------------------------------------------
 def tabFrame2binary(t):
     b = np.zeros(5*6)
     for i in range(6):
@@ -37,6 +38,66 @@ def binary2tablature(b):
             t[j,i] = bool2int( b[j*5:j*5+5, i].astype(int) )
     t[ t==31 ] = -1
     return t
+
+# flat tab -------------------------------------------------------------------
+
+def tabFrame2flatFretboard(t, frets_num=24):
+    f = np.zeros( (6, frets_num+1) ) # 0-th fret is counted
+    for i in range(len(t)):
+        if t[i] >= 0 and t[i] <= frets_num:
+            f[i, t[i].astype(int)] = 1
+    # print('before flat: ', f.shape)
+    # print('after flat: ', f.flatten().shape)
+    return f.flatten()
+
+def tablature2flatFretboard(tablature, frets_num=24):
+    f = np.zeros( ( 6*(frets_num+1) , tablature.shape[1] ) )
+    for i in range( tablature.shape[1] ):
+        f[:,i] = tabFrame2flatFretboard( tablature[:, i], frets_num=frets_num )
+    return f
+
+# full tab 3D ----------------------------------------------------------------
+def tabFrame2Fretboard(t, frets_num=24):
+    f = np.zeros( (6, frets_num+1) ) # 0-th fret is counted
+    for i in range(len(t)):
+        if t[i] >= 0 and t[i] <= frets_num:
+            f[i, t[i].astype(int)] = 1
+    # print('before flat: ', f.shape)
+    # print('after flat: ', f.flatten().shape)
+    return f
+
+# %% plottings
+def plot_full_tabs(t, titles=None):
+    for i in range(t.shape[0]):
+        plt.subplot( 4, (t.shape[0]-1)//4+1, i+1 )
+        plt.imshow(t[i,:,:], cmap='gray_r')
+        if titles is not None:
+            if len(titles) == t.shape[0]:
+                plt.title( titles[i] )
+            else:
+                if i == t.shape[0]-1:
+                    plt.title(titles)
+        else:
+            plt.title(str( i ))
+
+def plot_flat_tabs(t, titles=None):
+    for i in range(t.shape[1]):
+        plt.subplot( 4, (t.shape[1]-1)//4+1, i+1 )
+        plt.imshow( np.reshape( t[:,i], [6,25] ), cmap='gray_r')
+        if titles is not None:
+            if len(titles) == t.shape[1]:
+                plt.title( titles[i] )
+            else:
+                if i == t.shape[1]-1:
+                    plt.title(titles)
+        else:
+            plt.title(str( i ))
+
+def tablature2Fretboard(tablature, frets_num=24):
+    f = np.zeros( ( tablature.shape[1] , 6, frets_num+1 ) )
+    for i in range( tablature.shape[1] ):
+        f[i,:,:] = tabFrame2Fretboard( tablature[:, i], frets_num=frets_num )
+    return f
 
 class GPPieceEvents:
     def __init__(self, file_path):
@@ -180,8 +241,11 @@ class TrackRepresentation():
     # end plot_tab_part
 
 class GuitarTabDataset():
-    def __init__(self, history=2):
+    def __init__(self, history=2, task='string_activation',
+                 output_representation='binary_tab',):
         self.history = history
+        self.task = task
+        self.output_representation = output_representation
         # collections of matrices
         self.pianoroll_changes = []
         self.tablature_changes = []
@@ -194,21 +258,52 @@ class GuitarTabDataset():
         self.x_test = None
         self.y_test = None
     # end constructor
-    def add_matrices(self, r):
+    def add_matrices_old(self, r):
         # add from TrackRepresentation object
         tmp_all_x = np.concatenate( (np.zeros((r.pianoroll_changes.shape[0], self.history)), r.pianoroll_changes ), axis=1)
         tmp_x = tmp_all_x[:, self.history:]
         for i in range(1, self.history+1, 1):
             tmp_x = np.vstack( (tmp_x , tmp_all_x[:, self.history-i:-i]) )
         self.pianoroll_changes.append( tmp_x )
-        self.tablature_changes.append( tablature2binary(r.tablature_changes) )
+        if self.output_representation == 'binary_tab':
+            self.tablature_changes.append( tablature2binary(r.tablature_changes) )
+        elif self.output_representation == 'flat_tablature':
+            self.tablature_changes.append( tablature2flatFretboard(r.tablature_changes) )
+        elif self.output_representation == 'full_tablature':
+            self.tablature_changes.append( tablature2Fretboard(r.tablature_changes) )
+        else:
+            print('unknown output_representation')
+        self.string_activation_changes.append( r.string_activation_changes )
+        # self.tablature_changes.append( np.concatenate( (np.zeros((r.tablature_changes.shape[0], self.history)), r.tablature_changes ), axis=1) )
+        # self.string_activation_changes.append( np.concatenate( (np.zeros((r.string_activation_changes.shape[0], self.history)), r.string_activation_changes ), axis=1) )
+    # end add_matrices_old
+    def add_matrices(self, r):
+        # add from TrackRepresentation object
+        # tmp_all_x = np.concatenate( (np.zeros((r.pianoroll_changes.shape[0], self.history)), r.pianoroll_changes ), axis=1)
+        if self.output_representation == 'binary_tab':
+            # TODO: put binary tab history
+            tmp_all_x = np.concatenate( (np.zeros((r.pianoroll_changes.shape[0], self.history)), r.pianoroll_changes ), axis=1)
+            tmp_x = tmp_all_x[:, self.history:]
+        elif self.output_representation == 'flat_tablature':
+            tmp_flat_tab = tablature2flatFretboard(r.tablature_changes)
+            tmp_all_x = np.concatenate( (np.zeros((tmp_flat_tab.shape[0], self.history)), tmp_flat_tab ), axis=1)
+            tmp_x = r.pianoroll_changes
+        for i in range(1, self.history+1, 1):
+            tmp_x = np.vstack( (tmp_x , tmp_all_x[:, self.history-i:-i]) )
+        self.pianoroll_changes.append( tmp_x )
+        if self.output_representation == 'binary_tab':
+            self.tablature_changes.append( tablature2binary(r.tablature_changes) )
+        elif self.output_representation == 'flat_tablature':
+            self.tablature_changes.append( tablature2flatFretboard(r.tablature_changes) )
+        elif self.output_representation == 'full_tablature':
+            self.tablature_changes.append( tablature2Fretboard(r.tablature_changes) )
+        else:
+            print('unknown output_representation')
         self.string_activation_changes.append( r.string_activation_changes )
         # self.tablature_changes.append( np.concatenate( (np.zeros((r.tablature_changes.shape[0], self.history)), r.tablature_changes ), axis=1) )
         # self.string_activation_changes.append( np.concatenate( (np.zeros((r.string_activation_changes.shape[0], self.history)), r.string_activation_changes ), axis=1) )
     # end add_matrices
-    def load_data(self, task='string_activation', train_ratio=0.8,
-                  validation=True, validation_ratio=0.2):
-        self.task = task
+    def load_data(self, train_ratio=0.8, validation=True, validation_ratio=0.2):
         self.validation = validation
         # shuffled_idxs = np.arange( len( self.pianoroll_changes ) )
         # np.random.shuffle( shuffled_idxs )
@@ -246,3 +341,24 @@ class GuitarTabDataset():
         else:
             return [self.x_train, self.y_train, self.x_test, self.y_test]
     # end load_data
+    def load_full_tabs(self, train_ratio=0.8, validation=True, validation_ratio=0.2):
+        self.validation = validation
+        self.tablature_changes = shuffle( self.tablature_changes )
+        train_idx = np.floor( len( self.tablature_changes )*train_ratio ).astype(int)
+        valid_idx = 0
+        if self.validation:
+            valid_idx = np.floor( train_idx*validation_ratio ).astype(int)
+            x_valid = self.tablature_changes[train_idx-valid_idx:train_idx]
+        x_train = self.tablature_changes[:train_idx-valid_idx]
+        x_test = self.tablature_changes[train_idx:]
+        
+        self.x_train = np.concatenate( x_train , axis=0 )
+        self.x_test = np.concatenate( x_test , axis=0 )
+        
+        if self.validation:
+            self.x_valid = np.concatenate( x_valid , axis=0 )
+        
+        if self.validation:
+            return [self.x_train, self.y_train, self.x_valid, self.y_valid, self.x_test, self.y_test]
+        else:
+            return [self.x_train, self.y_train, self.x_test, self.y_test]
