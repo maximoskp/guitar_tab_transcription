@@ -12,38 +12,31 @@ import os
 
 # %% 
 
-# RUN to save first time
+# RUN
+with open('data' + os.sep + 'track_events.pickle', 'rb') as handle:
+    pieces = pickle.load(handle)
 
-track_event_files = os.listdir( 'data/dadaGP_event_parts' )
+# %% 
 
-excepted2_pieces = []
+# TODO: use the following info properly
+# min_pitch = 40
+# max_pitch = 94
 
-for te_file in track_event_files:
-    with open('data/dadaGP_event_parts' + os.sep + te_file, 'rb') as handle:
-        pieces = pickle.load(handle)
-    track_representations = []
-    for p in pieces:
-        print(p.name)
-        excepted = False
-        for i, t in enumerate( p.track_events ):
-            print(i)
-            try:
-                tmp_track_repr = gp2events.TrackRepresentation( t, 
-                                                               piece_name=p.name,
-                                                               track_number=i )
-            except:
-                excepted2_pieces.append( p.name )
-                excepted = True
-            if not excepted:
-                track_representations.append( tmp_track_repr )
-    tmp_array = te_file.split('.')[0].split('_')[:-1]
-    tmp_array.append('representations.pickle')
-    rep_name = '_'.join(tmp_array)
-    with open('data/track_representation_parts' + os.sep + rep_name, 'wb') as handle:
-        pickle.dump(track_representations, handle, protocol=pickle.HIGHEST_PROTOCOL)
+track_representations = []
 
-with open('data/' + os.sep + 'excepted2_pieces.pickle', 'wb') as handle:
-    pickle.dump(excepted2_pieces, handle, protocol=pickle.HIGHEST_PROTOCOL)
+for p in pieces:
+    print(p.name)
+    for i, t in enumerate( p.track_events ):
+        print(i)
+        tmp_track_repr = gp2events.TrackRepresentation( t, 
+                                                       piece_name=p.name,
+                                                       track_number=i )
+        track_representations.append( tmp_track_repr )
+
+# %% 
+
+with open('data' + os.sep + 'track_representations.pickle', 'wb') as handle:
+    pickle.dump(track_representations, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # %% 
 
@@ -81,19 +74,10 @@ with open('data' + os.sep + 'string_activation_dataset.pickle', 'rb') as handle:
 
 dataset = gp2events.GuitarTabDataset(task='flat_tablature', 
                                      output_representation='flat_tablature',
-                                     history=2)
+                                     history=5)
 
-rep_folder = 'data/track_representation_parts'
-reps = os.listdir( rep_folder )
-
-for f_name in reps:
-    f_path = os.path.join( rep_folder, f_name )
-    b = None
-    print(f_path)
-    with open(f_path, 'rb') as handle:
-        b = pickle.load(handle)
-    for r in b:
-        dataset.add_matrices(r)
+for r in b:
+    dataset.add_matrices(r)
 
 [x_train, y_train, x_valid, y_valid, x_test, y_test] = dataset.load_data()
 

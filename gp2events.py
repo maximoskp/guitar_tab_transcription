@@ -163,20 +163,27 @@ class GPPieceEvents:
 # end class GPPieceEvents
 
 class TrackRepresentation():
-    def __init__(self, track, piece_name='undefined', track_number=-1):
+    def __init__(self, track, piece_name='undefined', track_number=-1, keep_full=False):
         self.piece_name = piece_name
         self.track_number = track_number
+        self.keep_full= keep_full
         onsets = np.array( [ t['onset_piece'] for t in track ] )
         onsets -= onsets[0]
         g = np.gcd.reduce(onsets)
-        onsets = (onsets/g).astype('int')
+        if g > 0:
+            onsets = (onsets/g).astype('int')
+        else:
+            onsets = onsets.astype('int')
         
         durations = np.array( [ t['duration'] for t in track ] )
-        durations = np.floor( durations/g ).astype( 'int' )
+        if g > 0:
+            durations = np.floor( durations/g ).astype( 'int' )
+        else:
+            durations = np.floor( durations ).astype('int')
         durations[durations==0] = 1
         
-        self.pianoroll = np.zeros( ( 128 , onsets[-1]+durations[-1] ) )
-        self.onsetsroll = np.zeros( ( 128 , onsets[-1]+durations[-1] ) )
+        self.pianoroll = np.zeros( ( 128 , onsets[-1]+durations[-1] ), dtype=np.float32)
+        self.onsetsroll = np.zeros( ( 128 , onsets[-1]+durations[-1] ), dtype=np.float32 )
         
         for i, t in enumerate(track):
             pitches = t['pitches']
@@ -192,8 +199,8 @@ class TrackRepresentation():
         # self.pianoroll = self.pianoroll[40:95, :]
         # self.onsetsroll = self.onsetsroll[40:95, :]
         
-        self.tablature = -1*np.ones( ( 6 , onsets[-1]+durations[-1] ) )
-        self.string_activation = np.zeros( ( 6 , onsets[-1]+durations[-1] ) )
+        self.tablature = -1*np.ones( ( 6 , onsets[-1]+durations[-1] ), dtype=np.float32 )
+        self.string_activation = np.zeros( ( 6 , onsets[-1]+durations[-1] ), dtype=np.float32 )
         
         for i, t in enumerate(track):
             pitches = t['pitches']
@@ -214,6 +221,11 @@ class TrackRepresentation():
         self.tablature_changes = t0[:, idx2keep]
         s0 = self.string_activation[:, nz_idxs]
         self.string_activation_changes = s0[:, idx2keep]
+        if not self.keep_full:
+            del self.pianoroll
+            del self.onsetsroll
+            del self.tablature
+            del self.string_activation
     # end constructor
     
     def plot_pianoroll_part(self, start_idx=0, end_idx=50):
