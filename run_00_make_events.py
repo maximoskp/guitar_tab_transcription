@@ -23,7 +23,7 @@ main_folder = 'data/DadaGP-v1.1/DadaGP-v1.1'
 level_A_folders = os.listdir(main_folder)
 
 # np.random.seed(100)
-# keep percentage of subfolders, for reducing data size for testing
+# keep percentage of files, for reducing data size for testing
 data_percentage = 0.05
 
 # pieces_events = []
@@ -39,11 +39,11 @@ for level_A_folder in level_A_folders:
         pieces_events = []
         level_B_folders = os.listdir( level_A_path )
         for level_B_folder in level_B_folders:
-            # decide whether to process or not current subfolder
-            if np.random.rand() <= data_percentage:
-                level_B_path = os.path.join( level_A_path, level_B_folder )
-                for file in os.listdir( level_B_path ):
-                    if file[-4:-1] == '.gp':
+            level_B_path = os.path.join( level_A_path, level_B_folder )
+            for file in os.listdir( level_B_path ):
+                if file[-4:-1] == '.gp':
+                    # decide whether to process or not current file
+                    if np.random.rand() <= data_percentage:
                         print( os.path.join(level_B_path, file) )
                         excepted = False
                         try:
