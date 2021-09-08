@@ -13,8 +13,6 @@ else:
 import data_utils
 import os
 
-# %% 
-
 pianoroll_tokens_u = []
 
 rep_folder = 'data/track_representation_parts'

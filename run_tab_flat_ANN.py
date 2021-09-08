@@ -17,8 +17,6 @@ import os
 import matplotlib.pyplot as plt
 import data_utils
 
-# %% 
-
 with open('data' + os.sep + 'flat_tablature_dataset.pickle', 'rb') as handle:
     d = pickle.load(handle)
 
@@ -30,32 +28,20 @@ x_test = d['x_test'].T
 y_test = d['y_test'].T
 
 
-# %% 
-
 model = keras.models.Sequential()
 model.add(keras.layers.Dense(500, activation='relu', input_shape=[x_train.shape[1]]))
 model.add(keras.layers.Dense(300, activation='relu'))
 model.add(keras.layers.Dense(100, activation='relu'))
 model.add(keras.layers.Dense(y_train.shape[1], activation='sigmoid'))
 
-# %% 
-
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-# %% 
 
 history = model.fit( x_train, y_train, epochs=1000, batch_size=16,
                     validation_data=(x_valid,y_valid))
 
-# %% 
-
 model.save('models/tab_flat_ANN.h5')
 
-# %% 
-
 model.evaluate( x_test, y_test )
-
-# %% 
 
 l = 10
 i = np.random.randint(y_test.shape[0]-l)
