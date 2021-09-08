@@ -66,6 +66,56 @@ def tabFrame2Fretboard(t, frets_num=24):
     # print('after flat: ', f.flatten().shape)
     return f
 
+# pianoroll column 2 tokens -------------------------------------------------
+def pianorollFrame2tokens(c, compount=True):
+    nz = np.where( c != 0 )[0]
+    s = []
+    for i in nz:
+        if compount:
+            s.append( 'note_' + str( i ) )
+        else:
+            s.append( 'note' )
+            s.append( str( i ) )
+    return s
+
+# pianoroll 2 tokens ---------------------------------------------------------
+def pianoroll2tokens(p, compount=True):
+    s = ['<SOS>']
+    for i in range( p.shape[1] ):
+        c = pianorollFrame2tokens( p[:,i], compount )
+        if len( c ) > 0:
+            s.append( 'new_frame' )
+            s.extend( c )
+    s.append('<EOS>')
+    return s
+
+# tablature string 2 tokens ---------------------------------------------------------
+string_names = ['E', 'A', 'D', 'G', 'B', 'E']
+def tablatureFrame2tokens(c, compount=True):
+    nz = np.where( c != -1 )[0]
+    s = []
+    for i in nz:
+        if compount:
+            s.append('string_' + string_names[ i ])
+            s.append('fret_' + str(c[i].astype(int)))
+        else:
+            s.append('string')
+            s.append( string_names[ i ] )
+            s.append('fret')
+            s.append(str(c[i].astype(int)))
+    return s
+
+# tablature 2 tokens ---------------------------------------------------------
+def tablature2tokens(p, compount=True):
+    s = ['<SOS>']
+    for i in range( p.shape[1] ):
+        c = tablatureFrame2tokens( p[:,i], compount )
+        if len( c ) > 0:
+            s.append( 'new_frame' )
+            s.extend( c )
+    s.append('<EOS>')
+    return s
+
 # %% plottings
 def plot_full_tabs(t, titles=None):
     for i in range(t.shape[0]):
@@ -302,16 +352,16 @@ class GuitarTabDataset():
             tmp_x = r.pianoroll_changes
         for i in range(1, self.history+1, 1):
             tmp_x = np.vstack( (tmp_x , tmp_all_x[:, self.history-i:-i]) )
-        self.pianoroll_changes.append( tmp_x )
+        self.pianoroll_changes.append( tmp_x.astype(bool) )
         if self.output_representation == 'binary_tab':
             self.tablature_changes.append( tablature2binary(r.tablature_changes) )
         elif self.output_representation == 'flat_tablature':
-            self.tablature_changes.append( tablature2flatFretboard(r.tablature_changes) )
+            self.tablature_changes.append( tablature2flatFretboard(r.tablature_changes).astype(bool) )
         elif self.output_representation == 'full_tablature':
             self.tablature_changes.append( tablature2Fretboard(r.tablature_changes) )
         else:
             print('unknown output_representation')
-        self.string_activation_changes.append( r.string_activation_changes )
+        # self.string_activation_changes.append( r.string_activation_changes )
         # self.tablature_changes.append( np.concatenate( (np.zeros((r.tablature_changes.shape[0], self.history)), r.tablature_changes ), axis=1) )
         # self.string_activation_changes.append( np.concatenate( (np.zeros((r.string_activation_changes.shape[0], self.history)), r.string_activation_changes ), axis=1) )
     # end add_matrices
@@ -319,9 +369,11 @@ class GuitarTabDataset():
         self.validation = validation
         # shuffled_idxs = np.arange( len( self.pianoroll_changes ) )
         # np.random.shuffle( shuffled_idxs )
-        self.pianoroll_changes, self.tablature_changes, self.string_activation_changes = shuffle( self.pianoroll_changes,
-                                                 self.tablature_changes,
-                                                 self.string_activation_changes)
+        # self.pianoroll_changes, self.tablature_changes, self.string_activation_changes = shuffle( self.pianoroll_changes,
+        #                                          self.tablature_changes,
+        #                                          self.string_activation_changes)
+        self.pianoroll_changes, self.tablature_changes= shuffle( self.pianoroll_changes,
+                                                 self.tablature_changes)
         train_idx = np.floor( len( self.pianoroll_changes )*train_ratio ).astype(int)
         valid_idx = 0
         if self.validation:

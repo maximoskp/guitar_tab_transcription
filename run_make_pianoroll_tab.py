@@ -95,9 +95,11 @@ for f_name in reps:
     for r in b:
         dataset.add_matrices(r)
 
+# %% 
+
 [x_train, y_train, x_valid, y_valid, x_test, y_test] = dataset.load_data()
 
-string_activation_dataset = {
+flat_tablature_dataset = {
     'x_train': x_train,
     'y_train': y_train,
     'x_valid': x_valid,
@@ -107,7 +109,7 @@ string_activation_dataset = {
 }
 
 with open('data' + os.sep + 'flat_tablature_dataset.pickle', 'wb') as handle:
-    pickle.dump(string_activation_dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(flat_tablature_dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 # %% full tablature 3D
