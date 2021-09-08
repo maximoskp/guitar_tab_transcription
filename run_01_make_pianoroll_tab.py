@@ -14,10 +14,7 @@ else:
 import data_utils
 import os
 
-# %% 
-
 # RUN to save first time
-
 track_event_files = os.listdir( 'data/dadaGP_event_parts' )
 
 excepted2_pieces = []
@@ -49,40 +46,14 @@ for te_file in track_event_files:
 with open('data/' + os.sep + 'excepted2_pieces.pickle', 'wb') as handle:
     pickle.dump(excepted2_pieces, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-# %% 
+# TODO: parametrize the following for generating string activation and full tab,
+# based on arguments given on top (todo)
 
-# RUN
+# create flat tablature dataset
 with open('data' + os.sep + 'track_representations.pickle', 'rb') as handle:
     b = pickle.load(handle)
 
-# %% string activation
-
-dataset = data_utils.GuitarTabDataset()
-
-for r in b:
-    dataset.add_matrices(r)
-
-[x_train, y_train, x_valid, y_valid, x_test, y_test] = dataset.load_data()
-
-string_activation_dataset = {
-    'x_train': x_train,
-    'y_train': y_train,
-    'x_valid': x_valid,
-    'y_valid': y_valid,
-    'x_test': x_test,
-    'y_test': y_test,
-}
-
-with open('data' + os.sep + 'string_activation_dataset.pickle', 'wb') as handle:
-    pickle.dump(string_activation_dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-# %% 
-
-with open('data' + os.sep + 'string_activation_dataset.pickle', 'rb') as handle:
-    d = pickle.load(handle)
-
-# %% flat tablature
-
+# flat tablature dataset
 dataset = data_utils.GuitarTabDataset(task='flat_tablature', 
                                      output_representation='flat_tablature',
                                      history=2)
@@ -99,7 +70,7 @@ for f_name in reps:
     for r in b:
         dataset.add_matrices(r)
 
-# %% 
+# create final matrices
 
 [x_train, y_train, x_valid, y_valid, x_test, y_test] = dataset.load_data()
 
@@ -114,25 +85,3 @@ flat_tablature_dataset = {
 
 with open('data' + os.sep + 'flat_tablature_dataset.pickle', 'wb') as handle:
     pickle.dump(flat_tablature_dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-
-# %% full tablature 3D
-
-dataset = data_utils.GuitarTabDataset(task='full_tablature', output_representation='full_tablature')
-
-for r in b:
-    dataset.add_matrices(r)
-
-[x_train, y_train, x_valid, y_valid, x_test, y_test] = dataset.load_full_tabs()
-
-string_activation_dataset = {
-    'x_train': x_train,
-    'y_train': y_train,
-    'x_valid': x_valid,
-    'y_valid': y_valid,
-    'x_test': x_test,
-    'y_test': y_test,
-}
-
-with open('data' + os.sep + 'full_tablature_dataset.pickle', 'wb') as handle:
-    pickle.dump(string_activation_dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
