@@ -6,12 +6,16 @@ Created on Fri Sep  3 11:53:34 2021
 """
 
 import numpy as np
-import pickle
+import sys
+if sys.version_info >= (3,8):
+    import pickle
+else:
+    import pickle5 as pickle
 import tensorflow as tf
 from tensorflow import keras
 import os
 import matplotlib.pyplot as plt
-import gp2events
+# import data_utils
 
 # %% 
 

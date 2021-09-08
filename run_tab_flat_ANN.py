@@ -15,7 +15,7 @@ import tensorflow as tf
 from tensorflow import keras
 import os
 import matplotlib.pyplot as plt
-import gp2events
+import data_utils
 
 # %% 
 

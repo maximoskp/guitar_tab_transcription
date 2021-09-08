@@ -6,8 +6,12 @@ Created on Sun Aug 29 07:12:02 2021
 """
 
 # RUN
-import pickle
-import gp2events
+import sys
+if sys.version_info >= (3,8):
+    import pickle
+else:
+    import pickle5 as pickle
+import data_utils
 import os
 
 # %% 
@@ -28,7 +32,7 @@ for te_file in track_event_files:
         for i, t in enumerate( p.track_events ):
             print(i)
             try:
-                tmp_track_repr = gp2events.TrackRepresentation( t, 
+                tmp_track_repr = data_utils.TrackRepresentation( t, 
                                                                piece_name=p.name,
                                                                track_number=i )
             except:
@@ -53,7 +57,7 @@ with open('data' + os.sep + 'track_representations.pickle', 'rb') as handle:
 
 # %% string activation
 
-dataset = gp2events.GuitarTabDataset()
+dataset = data_utils.GuitarTabDataset()
 
 for r in b:
     dataset.add_matrices(r)
@@ -79,7 +83,7 @@ with open('data' + os.sep + 'string_activation_dataset.pickle', 'rb') as handle:
 
 # %% flat tablature
 
-dataset = gp2events.GuitarTabDataset(task='flat_tablature', 
+dataset = data_utils.GuitarTabDataset(task='flat_tablature', 
                                      output_representation='flat_tablature',
                                      history=2)
 
@@ -114,7 +118,7 @@ with open('data' + os.sep + 'flat_tablature_dataset.pickle', 'wb') as handle:
 
 # %% full tablature 3D
 
-dataset = gp2events.GuitarTabDataset(task='full_tablature', output_representation='full_tablature')
+dataset = data_utils.GuitarTabDataset(task='full_tablature', output_representation='full_tablature')
 
 for r in b:
     dataset.add_matrices(r)

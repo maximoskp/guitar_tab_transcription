@@ -9,6 +9,7 @@ __pycache__/
 data/
 figs/
 models/
+old_code/
 
 # Distribution / packaging
 .Python

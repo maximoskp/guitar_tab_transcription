@@ -6,7 +6,11 @@ Created on Tue Aug 31 07:14:49 2021
 """
 
 import numpy as np
-import pickle
+import sys
+if sys.version_info >= (3,8):
+    import pickle
+else:
+    import pickle5 as pickle
 import tensorflow as tf
 from tensorflow import keras
 import os

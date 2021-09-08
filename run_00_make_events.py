@@ -7,11 +7,14 @@ Created on Sat Aug 28 17:20:47 2021
 
 import os
 import guitarpro as gp
-# from gp2events import GPPieceEvents
-import gp2events
+import data_utils
 import numpy as np
 
-import pickle
+import sys
+if sys.version_info >= (3,8):
+    import pickle
+else:
+    import pickle5 as pickle
 
 # %% 
 
@@ -39,7 +42,7 @@ for level_A_folder in level_A_folders:
                     print( os.path.join(level_B_path, file) )
                     excepted = False
                     try:
-                        gpPieceEvent = gp2events.GPPieceEvents( os.path.join(level_B_path, file) )
+                        gpPieceEvent = data_utils.GPPieceEvents( os.path.join(level_B_path, file) )
                     except:
                         excepted = True
                         print('EXCEPTED')
