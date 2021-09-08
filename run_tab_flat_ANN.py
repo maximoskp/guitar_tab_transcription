@@ -38,7 +38,7 @@ model.add(keras.layers.Dense(y_train.shape[1], activation='sigmoid'))
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-filepath = 'data/models/bestValANN_epoch{epoch:02d}_loss{val_loss:.2f}.hdf5'
+filepath = 'data/models/bestValANN_epoch{epoch:02d}_valAcc{val_accuracy:.2f}.hdf5'
 checkpoint = ModelCheckpoint(filepath=filepath,
                             monitor='val_accuracy',
                             verbose=1,
