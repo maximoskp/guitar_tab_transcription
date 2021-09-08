@@ -165,7 +165,7 @@ class GPPieceEvents:
             proper_tunning = [64, 59, 55, 50, 45, 40] # make static
             for i, s in enumerate(strings):
                 if i >= len(proper_tunning) or s.value != proper_tunning[i]:
-                    print( file_path + ' - ' + str(s.value) + ': tunning not proper - ABORTING')
+                    # print( file_path + ' - ' + str(s.value) + ': tunning not proper - ABORTING')
                     proper_guitar = False
                     aborted = True
                     break
@@ -178,11 +178,13 @@ class GPPieceEvents:
                         beats = voice.beats
                         for beat in beats:
                             if beat.effect.mixTableChange:
-                                print( file_path + ': mixTableChange - ABORTING beat')
+                                pass
+                                # print( file_path + ': mixTableChange - ABORTING beat')
                                 # aborted = True
                             else:
                                 if beat.status.name != 'normal':
-                                    print( file_path + ': not normal - ABORTING beat')
+                                    pass
+                                    # print( file_path + ': not normal - ABORTING beat')
                                     # aborted = True
                                 else:
                                     note_event = {}
@@ -206,7 +208,8 @@ class GPPieceEvents:
                                             note_event['pitches'].append( pitch_event )
                                             note_events.append( note_event )
                                         else:
-                                            print(file_path + 'note type NOT 1 - ABORTING event')
+                                            pass
+                                            # print(file_path + 'note type NOT 1 - ABORTING event')
             if not aborted:
                 if len( note_events ) > 0:
                     self.track_events.append(note_events)
