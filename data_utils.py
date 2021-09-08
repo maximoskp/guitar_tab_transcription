@@ -353,9 +353,10 @@ class GuitarTabDataset():
             tmp_flat_tab = tablature2flatFretboard(r.tablature_changes)
             tmp_all_x = np.concatenate( (np.zeros((tmp_flat_tab.shape[0], self.history)), tmp_flat_tab ), axis=1)
             tmp_x = r.pianoroll_changes
-        for i in range(1, self.history+1, 1):
-            tmp_x = np.vstack( (tmp_x , tmp_all_x[:, self.history-i:-i]) )
-        self.pianoroll_changes.append( tmp_x.astype(bool) )
+        if self.output_representation == 'flat_tablature' or self.output_representation == 'binary_tab':
+            for i in range(1, self.history+1, 1):
+                tmp_x = np.vstack( (tmp_x , tmp_all_x[:, self.history-i:-i]) )
+            self.pianoroll_changes.append( tmp_x.astype(bool) )
         if self.output_representation == 'binary_tab':
             self.tablature_changes.append( tablature2binary(r.tablature_changes) )
         elif self.output_representation == 'flat_tablature':

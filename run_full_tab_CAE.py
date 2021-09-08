@@ -17,7 +17,7 @@ import os
 import matplotlib.pyplot as plt
 # import data_utils
 
-# %% 
+from tensorflow.keras.callbacks import ModelCheckpoint
 
 with open('data' + os.sep + 'full_tablature_dataset.pickle', 'rb') as handle:
     d = pickle.load(handle)
@@ -28,8 +28,6 @@ x_valid = d['x_valid']
 y_valid = d['y_valid']
 x_test = d['x_test']
 y_test = d['y_test']
-
-# %% 
 
 conv_encoder = keras.models.Sequential([
     keras.layers.Reshape([6, 25, 1], input_shape=[6,25]),
@@ -51,16 +49,17 @@ conv_decoder = keras.models.Sequential([
     keras.layers.Reshape([6, 25])
 ])
 
-# %%
-
 conv_ae = keras.models.Sequential([conv_encoder, conv_decoder])
-
-# %% 
 
 conv_ae.compile(loss='binary_crossentropy', optimizer='adam',
                 metrics=['accuracy'])
 
-# %% 
+filepath = 'data/models/bestValCNN_epoch{epoch:02d}_valAcc{val_accuracy:.2f}.hdf5'
+checkpoint = ModelCheckpoint(filepath=filepath,
+                            monitor='val_accuracy',
+                            verbose=1,
+                            save_best_only=True,
+                            mode='max')
 
 history = conv_ae.fit(x_train, x_train, validation_data=(x_valid, x_valid), 
-                      epochs=30, batch_size=32)
+                      epochs=1000, batch_size=16, callbacks=[checkpoint])
