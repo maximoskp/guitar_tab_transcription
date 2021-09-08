@@ -6,7 +6,11 @@ Created on Tue Aug 31 23:40:59 2021
 """
 
 import numpy as np
-import pickle
+import sys
+if sys.version_info >= (3,8):
+    import pickle
+else:
+    import pickle5 as pickle
 import tensorflow as tf
 from tensorflow import keras
 import os
@@ -40,7 +44,7 @@ model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']
 
 # %% 
 
-history = model.fit( x_train, y_train, epochs=1000, batch_size=32,
+history = model.fit( x_train, y_train, epochs=1000, batch_size=16,
                     validation_data=(x_valid,y_valid))
 
 # %% 
