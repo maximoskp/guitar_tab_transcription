@@ -17,6 +17,8 @@ import os
 import matplotlib.pyplot as plt
 import data_utils
 
+from tensorflow.keras.callbacks import ModelCheckpoint
+
 with open('data' + os.sep + 'flat_tablature_dataset.pickle', 'rb') as handle:
     d = pickle.load(handle)
 
@@ -29,15 +31,22 @@ y_test = d['y_test'].T
 
 
 model = keras.models.Sequential()
-model.add(keras.layers.Dense(500, activation='relu', input_shape=[x_train.shape[1]]))
-model.add(keras.layers.Dense(300, activation='relu'))
-model.add(keras.layers.Dense(100, activation='relu'))
+model.add(keras.layers.Dense(300, activation='selu', input_shape=[x_train.shape[1]]))
+model.add(keras.layers.Dense(100, activation='selu'))
+model.add(keras.layers.Dense(30, activation='selu'))
 model.add(keras.layers.Dense(y_train.shape[1], activation='sigmoid'))
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
+filepath = 'data/models/bestValANN_epoch{epoch:02d}_loss{val_loss:.2f}.hdf5'
+checkpoint = ModelCheckpoint(filepath=filepath,
+                            monitor='val_accuracy',
+                            verbose=1,
+                            save_best_only=True,
+                            mode='max')
+
 history = model.fit( x_train, y_train, epochs=1000, batch_size=16,
-                    validation_data=(x_valid,y_valid))
+                    validation_data=(x_valid,y_valid), callbacks=[checkpoint])
 
 model.save('models/tab_flat_ANN.h5')
 
