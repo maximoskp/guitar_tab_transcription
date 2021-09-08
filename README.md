@@ -1,6 +1,13 @@
 # guitar_tab_transcription
 Transcribing guitar tabs from various musical inputs
 
+## Environment setup
+create conda environment:
+conda env create -f guitar_tab.yml
+
+save conda environment, if you make changes:
+conda env export -n guitar_tab -f guitar_tab.yml --no-builds
+
 What works best:
 run_tab_flat_ANN.py
 
