@@ -49,10 +49,6 @@ with open('data/' + os.sep + 'excepted2_pieces.pickle', 'wb') as handle:
 # TODO: parametrize the following for generating string activation and full tab,
 # based on arguments given on top (todo)
 
-# create flat tablature dataset
-with open('data' + os.sep + 'track_representations.pickle', 'rb') as handle:
-    b = pickle.load(handle)
-
 # flat tablature dataset
 dataset = data_utils.GuitarTabDataset(task='flat_tablature', 
                                      output_representation='flat_tablature',
