@@ -8,6 +8,10 @@ conda env create -f guitar_tab.yml
 save conda environment, if you make changes (caution: remove os and cuda-related dependencies!):
 conda env export -n guitar_tab -f guitar_tab.yml --no-builds
 
+## Before you run
+Create folder structure (todo, with python script)
+Before running again, make sure folders are empty (reset with python script)
+
 What works best:
 run_tab_flat_ANN.py
 
