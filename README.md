@@ -5,7 +5,7 @@ Transcribing guitar tabs from various musical inputs
 create conda environment:
 conda env create -f guitar_tab.yml
 
-save conda environment, if you make changes:
+save conda environment, if you make changes (caution: remove os and cuda-related dependencies!):
 conda env export -n guitar_tab -f guitar_tab.yml --no-builds
 
 What works best:
