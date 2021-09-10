@@ -5,8 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-model_path = 'models/' + os.listdir('models')[0]
-
+# model_path = 'data/models/' + os.listdir('data/models')[0]
+model_path = 'data/models/bestValCNN_current_best.hdf5'
+print('model_path: ', model_path)
 model = tf.keras.models.load_model(
     model_path, custom_objects=None, compile=True, options=None
 )

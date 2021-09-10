@@ -31,12 +31,12 @@ y_test = d['y_test']
 
 conv_encoder = keras.models.Sequential([
     keras.layers.Reshape([6, 25, 1], input_shape=[6,25]),
-    keras.layers.Conv2D(32, kernel_size=6, padding='valid', activation='selu'),
+    keras.layers.Conv2D(64, kernel_size=6, padding='valid', activation='selu'),
 ])
 
 conv_decoder = keras.models.Sequential([
     keras.layers.Conv2DTranspose(1, kernel_size=6, strides=1, padding='valid',
-                                 activation='sigmoid', input_shape=[1,20,32]),
+                                 activation='sigmoid', input_shape=[1,20,64]),
     keras.layers.Reshape([6, 25])
 ])
 
@@ -52,5 +52,12 @@ checkpoint = ModelCheckpoint(filepath=filepath,
                             save_best_only=True,
                             mode='max')
 
+filepath_current_best = 'data/models/bestValCNN_current_best.hdf5'
+checkpoint_current_best = ModelCheckpoint(filepath=filepath_current_best,
+                            monitor='val_accuracy',
+                            verbose=1,
+                            save_best_only=True,
+                            mode='max')
+
 history = conv_ae.fit(x_train, x_train, validation_data=(x_valid, x_valid), 
-                      epochs=1000, batch_size=16, callbacks=[checkpoint])
+                      epochs=1000, batch_size=16, callbacks=[checkpoint, checkpoint_current_best])
