@@ -40,6 +40,12 @@ conv_decoder = keras.models.Sequential([
     keras.layers.Reshape([6, 25])
 ])
 
+# initialise weights
+import weights_CAE
+w = weights_CAE.get_64_fingering_weights()
+conv_encoder.set_weights( [w, np.random.rand(64)] )
+conv_decoder.set_weights( [w, np.random.rand(1)] )
+
 conv_ae = keras.models.Sequential([conv_encoder, conv_decoder])
 
 conv_ae.compile(loss='binary_crossentropy', optimizer='adam',
