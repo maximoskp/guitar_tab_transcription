@@ -341,3 +341,15 @@ def get_64_fingering_weights():
     print('total fixed filters: ' + str(i))
     
     return w
+
+def get_128_fingering_weights():
+    w = np.zeros( (6,6,1,128) )
+    i = 64
+    
+    # first 64 filters
+    w[:,:,:,:i] = get_64_fingering_weights()
+    
+    # random
+    w[:,:,:,i:] = np.random.rand(6,6,1,64)
+    
+    return w

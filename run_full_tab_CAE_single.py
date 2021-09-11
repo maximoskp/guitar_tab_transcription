@@ -29,21 +29,26 @@ y_valid = d['y_valid']
 x_test = d['x_test']
 y_test = d['y_test']
 
+num_filters = 128
+
 conv_encoder = keras.models.Sequential([
     keras.layers.Reshape([6, 25, 1], input_shape=[6,25]),
-    keras.layers.Conv2D(64, kernel_size=6, padding='valid', activation='selu'),
+    keras.layers.Conv2D(num_filters, kernel_size=6, padding='valid', activation='selu'),
 ])
 
 conv_decoder = keras.models.Sequential([
     keras.layers.Conv2DTranspose(1, kernel_size=6, strides=1, padding='valid',
-                                 activation='sigmoid', input_shape=[1,20,64]),
+                                 activation='sigmoid', input_shape=[1,20,num_filters]),
     keras.layers.Reshape([6, 25])
 ])
 
 # initialise weights
 import weights_CAE
-w = weights_CAE.get_64_fingering_weights()
-conv_encoder.set_weights( [w, np.random.rand(64)] )
+if num_filters == 128:
+    w = weights_CAE.get_128_fingering_weights()
+else:
+    w = weights_CAE.get_64_fingering_weights()
+conv_encoder.set_weights( [w, np.random.rand(num_filters)] )
 conv_decoder.set_weights( [w, np.random.rand(1)] )
 
 conv_ae = keras.models.Sequential([conv_encoder, conv_decoder])
