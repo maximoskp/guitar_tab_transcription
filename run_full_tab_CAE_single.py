@@ -5,6 +5,8 @@ Created on Fri Sep 10 07:08:53 2021
 @author: user
 """
 
+# check out tensorflow keras constraint for imposing weight constraints
+
 import numpy as np
 import sys
 if sys.version_info >= (3,8):
@@ -30,10 +32,20 @@ x_test = d['x_test']
 y_test = d['y_test']
 
 num_filters = 128
+custom_initial_weights = False
+tiny_biases = False
 
 conv_encoder = keras.models.Sequential([
     keras.layers.Reshape([6, 25, 1], input_shape=[6,25]),
     keras.layers.Conv2D(num_filters, kernel_size=6, padding='valid', activation='selu'),
+])
+
+z = keras.models.Sequential([
+    keras.layers.Reshape([20*num_filters]),
+    keras.layers.Dense(20*num_filters, activation='selu'),
+    keras.layers.Dense(50, activation='selu'),
+    keras.layers.Dense(20*num_filters,activation='selu'),
+    keras.layers.Reshape([1,20,num_filters])
 ])
 
 conv_decoder = keras.models.Sequential([
@@ -43,15 +55,22 @@ conv_decoder = keras.models.Sequential([
 ])
 
 # initialise weights
-import weights_CAE
-if num_filters == 128:
-    w = weights_CAE.get_128_fingering_weights()
-else:
-    w = weights_CAE.get_64_fingering_weights()
-conv_encoder.set_weights( [w, np.random.rand(num_filters)] )
-conv_decoder.set_weights( [w, np.random.rand(1)] )
+if custom_initial_weights:
+    import weights_CAE
+    if num_filters == 128:
+        w = weights_CAE.get_128_fingering_weights()
+    else:
+        w = weights_CAE.get_64_fingering_weights()
+    b_enc = np.random.rand(num_filters)
+    b_dec = np.random.rand(1)
+    conv_encoder.set_weights( [w, b_enc] )
+    conv_decoder.set_weights( [w, b_dec] )
 
-conv_ae = keras.models.Sequential([conv_encoder, conv_decoder])
+if tiny_biases:
+    b_enc *= 0.0001
+    b_dec *= 0.0001
+
+conv_ae = keras.models.Sequential([conv_encoder, z, conv_decoder])
 
 conv_ae.compile(loss='binary_crossentropy', optimizer='adam',
                 metrics=['accuracy'])
