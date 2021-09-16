@@ -17,6 +17,7 @@ import tensorflow as tf
 from tensorflow import keras
 import os
 import matplotlib.pyplot as plt
+from scipy.stats import entropy
 # import data_utils
 
 from tensorflow.keras.callbacks import ModelCheckpoint
@@ -35,9 +36,20 @@ num_filters = 128
 custom_initial_weights = False
 tiny_biases = False
 
+# weight constraints
+class EntropyMinimizer(tf.keras.constraints.Constraint):
+    """Constrains weight tensors to minimum entropy."""
+    def __init__(self):
+        pass
+    
+    def __call__(self, w):
+        n = entropy(w.T)
+        n[ np.isnan(n) ] = 0
+        return np.sum( n )
+
 conv_encoder = keras.models.Sequential([
     keras.layers.Reshape([6, 25, 1], input_shape=[6,25]),
-    keras.layers.Conv2D(num_filters, kernel_size=6, padding='valid', activation='selu'),
+    keras.layers.Conv2D(num_filters, kernel_constraint=EntropyMinimizer(), kernel_size=6, padding='valid', activation='selu'),
 ])
 
 z = keras.models.Sequential([
@@ -50,7 +62,7 @@ z = keras.models.Sequential([
 
 conv_decoder = keras.models.Sequential([
     keras.layers.Conv2DTranspose(1, kernel_size=6, strides=1, padding='valid',
-                                 activation='sigmoid', input_shape=[1,20,num_filters]),
+                                 activation='sigmoid', kernel_constraint=EntropyMinimizer(), input_shape=[1,20,num_filters]),
     keras.layers.Reshape([6, 25])
 ])
 
