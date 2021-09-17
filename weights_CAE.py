@@ -7,6 +7,24 @@ Created on Fri Sep 10 23:00:08 2021
 
 import numpy as np
 
+def get_64_random_binary_row():
+    w = np.zeros( (6,6,1,64) )
+    for filter_idx in range(w.shape[3]):
+        for row in range(6):
+            r = np.random.randint(0, 12)
+            if r < 6:
+                w[row, r, 0, filter_idx] = 1
+    return w
+
+def get_128_random_binary_row():
+    w = np.zeros( (6,6,1,128) )
+    for filter_idx in range(w.shape[3]):
+        for row in range(6):
+            r = np.random.randint(0, 12)
+            if r < 6:
+                w[row, r, 0, filter_idx] = 1
+    return w
+
 def get_64_fingering_weights():
     w = np.zeros( (6,6,1,64) )
     i = 0

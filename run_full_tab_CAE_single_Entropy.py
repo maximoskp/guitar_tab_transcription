@@ -48,8 +48,8 @@ class EntropyMinimizer(tf.keras.constraints.Constraint):
         print('w: ', w)
         w_n = tfp.distributions.Categorical( probs=w ).entropy()
         # n = entropy(w_n.T)
-        w_n[ np.isnan(w_n) ] = 0
-        return np.sum( w_n )
+        w_n = tf.where( tf.math.is_nan(w_n) , tf.zeros_like(w_n), w_n )
+        return tf.math.reduce_sum( w_n )
 
 conv_encoder = keras.models.Sequential([
     keras.layers.Reshape([6, 25, 1], input_shape=[6,25]),
