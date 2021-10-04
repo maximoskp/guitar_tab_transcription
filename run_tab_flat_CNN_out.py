@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 31 23:40:59 2021
+Created on Sun Oct  3 07:30:57 2021
 
 @author: user
 """
@@ -29,15 +29,41 @@ y_valid = d['y_valid'].T
 x_test = d['x_test'].T
 y_test = d['y_test'].T
 
+num_filters = 64
+conv_decoder = keras.models.Sequential([
+    keras.layers.Conv2DTranspose(num_filters//2, kernel_size=3, strides=2, padding='valid',
+                                 activation='selu', input_shape=[1,6,num_filters//2]),
+    keras.layers.Conv2DTranspose(1, kernel_size=3, strides=2, padding='same',
+                                 activation='selu'),
+    # keras.layers.Lambda(lambda x: x[:,:,:-1,:]),
+    # keras.layers.Reshape([6, 25])
+])
+out_layer = keras.models.Sequential([
+    keras.layers.Lambda(lambda x: x[:,:,:-1,:]),
+    keras.layers.Reshape([6*25]),
+    keras.layers.Dense(y_train.shape[1], activation='sigmoid')
+])
 
 model = keras.models.Sequential()
-model.add(keras.layers.Dense(300, activation='selu', input_shape=[x_train.shape[1]]))
-model.add(keras.layers.Dense(100, activation='selu'))
-model.add(keras.layers.Dense(30, activation='selu'))
-model.add(keras.layers.Dense(y_train.shape[1], activation='sigmoid'))
+model.add(keras.layers.Dense(512, activation='selu', input_shape=[x_train.shape[1]]))
+model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.BatchNormalization())
+model.add(keras.layers.Dense(128, activation='selu'))
+model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.BatchNormalization())
+model.add(keras.layers.Dense(6*num_filters//2, activation='selu'))
+model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.BatchNormalization())
+# to apply lstm, timesteps need to be keept in the input
+# model.add(keras.layers.LSTM(6*num_filters//2, activation='selu'))
+model.add(keras.layers.Reshape([1,6,num_filters//2]))
+model.add(conv_decoder)
+model.add(out_layer)
 
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['cosine_similarity'])
+model.summary()
 
+# %% 
 filepath = 'data/models/bestLossANN_epoch{epoch:02d}_valLoss{val_loss:.6f}.hdf5'
 checkpoint = ModelCheckpoint(filepath=filepath,
                             monitor='val_loss',
@@ -59,6 +85,7 @@ model.save('models/tab_flat_ANN.h5')
 
 model.evaluate( x_test, y_test )
 
+# %%
 l = 10
 i = np.random.randint(y_test.shape[0]-l)
 

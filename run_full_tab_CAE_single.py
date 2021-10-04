@@ -79,22 +79,22 @@ if tiny_biases:
 
 conv_ae = keras.models.Sequential([conv_encoder, z, conv_decoder])
 
-conv_ae.compile(loss='binary_crossentropy', optimizer='adam',
-                metrics=['accuracy'])
+conv_ae.compile(loss='mean_squared_error', optimizer='adam',
+                metrics=['cosine_similarity'])
 
-filepath = 'data/models/bestValCNN_epoch{epoch:02d}_valAcc{val_accuracy:.2f}.hdf5'
+filepath = 'data/models/bestValCNN_epoch{epoch:02d}_valLoss{val_loss:.2f}.hdf5'
 checkpoint = ModelCheckpoint(filepath=filepath,
                             monitor='val_accuracy',
                             verbose=1,
                             save_best_only=True,
-                            mode='max')
+                            mode='min')
 
 filepath_current_best = 'data/models/bestValCNN_current_best.hdf5'
 checkpoint_current_best = ModelCheckpoint(filepath=filepath_current_best,
-                            monitor='val_accuracy',
+                            monitor='val_loss',
                             verbose=1,
                             save_best_only=True,
-                            mode='max')
+                            mode='min')
 
 history = conv_ae.fit(x_train, x_train, validation_data=(x_valid, x_valid), 
                       epochs=1000, batch_size=16, callbacks=[checkpoint, checkpoint_current_best])

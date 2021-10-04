@@ -52,7 +52,7 @@ with open('data/' + os.sep + 'excepted2_pieces.pickle', 'wb') as handle:
 # flat tablature dataset
 dataset = data_utils.GuitarTabDataset(task='flat_tablature', 
                                      output_representation='flat_tablature',
-                                     history=2)
+                                     history=4)
 
 rep_folder = 'data/track_representation_parts'
 reps = os.listdir( rep_folder )
