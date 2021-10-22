@@ -29,7 +29,7 @@ y_valid = d['y_valid'].T
 x_test = d['x_test'].T
 y_test = d['y_test'].T
 
-num_filters = 64
+num_filters = 128
 conv_decoder = keras.models.Sequential([
     keras.layers.Conv2DTranspose(num_filters//2, kernel_size=3, strides=2, padding='valid',
                                  activation='selu', input_shape=[1,6,num_filters//2]),
@@ -46,13 +46,13 @@ out_layer = keras.models.Sequential([
 
 model = keras.models.Sequential()
 model.add(keras.layers.Dense(512, activation='selu', input_shape=[x_train.shape[1]]))
-model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.Dropout(0.3))
 model.add(keras.layers.BatchNormalization())
-model.add(keras.layers.Dense(128, activation='selu'))
-model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.Dense(512, activation='selu'))
+model.add(keras.layers.Dropout(0.3))
 model.add(keras.layers.BatchNormalization())
 model.add(keras.layers.Dense(6*num_filters//2, activation='selu'))
-model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.Dropout(0.3))
 model.add(keras.layers.BatchNormalization())
 # to apply lstm, timesteps need to be keept in the input
 # model.add(keras.layers.LSTM(6*num_filters//2, activation='selu'))
