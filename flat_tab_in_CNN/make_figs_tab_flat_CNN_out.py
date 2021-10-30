@@ -7,6 +7,7 @@ import tensorflow as tf
 from tensorflow import keras
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 with open('..' + os.sep + 'data' + os.sep + 'flat_tablature_dataset.pickle', 'rb') as handle:
     d = pickle.load(handle)
@@ -25,9 +26,8 @@ model.evaluate( x_test, y_test )
 
 # %%
 sessions_num = 10
-session_ids = np.random.choice(y_test.shape[0]-l, sessions_num, replace=False)
-
 frames_per_session = 10
+session_ids = np.random.choice(y_test.shape[0]-frames_per_session, sessions_num, replace=False)
 
 for i in session_ids:
     for j in range(frames_per_session):
