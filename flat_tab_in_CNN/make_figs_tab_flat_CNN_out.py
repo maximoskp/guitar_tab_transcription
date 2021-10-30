@@ -19,7 +19,7 @@ x_test = d['x_test'].T
 y_test = d['y_test'].T
 
 # load model
-model = keras.models.load_model( 'models/tab_flat_CNN_out/tab_flat_CNN_out_current_best.hdf5' )
+model = keras.models.load_model( '../models/tab_flat_CNN_out/tab_flat_CNN_out_current_best.hdf5' )
 
 model.evaluate( x_test, y_test )
 

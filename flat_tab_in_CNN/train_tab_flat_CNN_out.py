@@ -67,14 +67,14 @@ model.summary()
 os.makedirs( 'models/tab_flat_CNN_out', exist_ok=True )
 
 # %% 
-filepath = 'models/tab_flat_CNN_out/tab_flat_CNN_out_epoch{epoch:02d}_valLoss{val_loss:.6f}.hdf5'
+filepath = '../models/tab_flat_CNN_out/tab_flat_CNN_out_epoch{epoch:02d}_valLoss{val_loss:.6f}.hdf5'
 checkpoint = ModelCheckpoint(filepath=filepath,
                             monitor='val_loss',
                             verbose=1,
                             save_best_only=True,
                             mode='min')
 
-filepath_current_best = 'models/tab_flat_CNN_out/tab_flat_CNN_out_current_best.hdf5'
+filepath_current_best = '../models/tab_flat_CNN_out/tab_flat_CNN_out_current_best.hdf5'
 checkpoint_current_best = ModelCheckpoint(filepath=filepath_current_best,
                             monitor='val_loss',
                             verbose=1,
