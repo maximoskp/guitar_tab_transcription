@@ -24,6 +24,8 @@ def my_read_midi_mido(file):
     mid = mido.MidiFile(file)
     piece = []
     ticks_per_beat = mid.ticks_per_beat
+    # to get the name of the piece
+    # piece_name = file.split(os.sep)[-1].split['.'][0]
     for track_id, t in enumerate(mid.tracks):
         time = 0
         track = []
@@ -44,7 +46,19 @@ def my_read_midi_mido(file):
                     if msg.type == 'note_on' and msg.velocity > 0:
                         # note onset
                         if note in active_notes:
-                            raise ValueError(f"{note} already active")
+                            # raise ValueError(f"{note} already active")
+                            print(f"{note} already active")
+                            # close and re-open it
+                            onset_time = active_notes[note][0]
+                            note_duration = time - active_notes[note][0]
+                            note_velocity = active_notes[note][1]
+                            # append to track
+                            track.append(Event(time=onset_time,
+                                               duration=note_duration,
+                                               pitch=msg.note,
+                                               velocity=note_velocity))
+                            del active_notes[note]
+                            active_notes[note] = (time, msg.velocity)
                         else:
                             active_notes[note] = (time, msg.velocity)
                     else:
@@ -61,10 +75,15 @@ def my_read_midi_mido(file):
                                                velocity=note_velocity))
                             del active_notes[note]
                         else:
-                            raise ValueError(f"{note} not active (time={time}, msg.type={msg.type}, "
-                                             f"msg.velocity={msg.velocity})")
+                            # raise ValueError(f"{note} not active (time={time}, msg.type={msg.type}, " f"msg.velocity={msg.velocity})")
+                            # permit two note-offs, just print warning
+                            print(f"{note} not active (time={time}, msg.type={msg.type}, " f"msg.velocity={msg.velocity})")
         piece += track
-    return list(sorted(piece, key=lambda x: x.time))
+        # if we need to have separate piano roll per track
+        # piece.append( track )
+        # then we need to sort each track in piece
+        # and run the remaining scripts per track
+    return list(sorted(piece, key=lambda x: x.time)), ticks_per_beat
 # end my_read_midi_mido
 
 def empty_tabready_event_dict():
@@ -85,12 +104,12 @@ def empty_tabready_pitch_dict():
     }
 # end empty_tabready_pitch_dict
 
-def onsetEvents2tabreadyEvents(events, parts_per_quarter=True):
+def onsetEvents2tabreadyEvents(events, parts_per_quarter=None):
     '''
     standard midi is 480 parts per quarter
     '''
     ppq_mult = 480
-    if not parts_per_quarter:
+    if parts_per_quarter is None:
         ppq_mult = 1
     tabreadyEvents = []
     for e in events:

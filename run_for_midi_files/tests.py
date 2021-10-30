@@ -13,13 +13,13 @@ pieces = os.listdir(folder)
 
 # %% run example
 
-idx = 1
-m = my_read_midi_mido( os.path.join(folder, pieces[idx]) )
+idx = 0
+m, ticks_per_beat = my_read_midi_mido( os.path.join(folder, pieces[idx]) )
 duration_events, onset_events = my_chordify(m)
 
 # %%
 
-tabReadyEvents = onsetEvents2tabreadyEvents(onset_events)
+tabReadyEvents = onsetEvents2tabreadyEvents(onset_events, parts_per_quarter=ticks_per_beat)
 
 # from the following, keep the pianoroll_changes
 trep = data_utils.TrackRepresentation(tabReadyEvents)
