@@ -247,15 +247,15 @@ class TrackRepresentation():
                     # check if random components need to be added in the pianoroll
                     random_pitch = -1
                     if random_pr is not None:
-                        if np.random.rand() >= random_pr:
+                        if np.random.rand() <= random_pr:
                             random_pitch = p['pitch'] + [-12, -5, -4, -3, 3, 4, 7, 12][np.random.randint(8)]
                     if d == 0:
                         self.onsetsroll[ p['pitch'] , onsets[i]+d ] = tmp_velocity
-                        if random_pitch != -1:
+                        if random_pitch >= 0:
                             self.onsetsroll[ random_pitch , onsets[i]+d ] = tmp_velocity
                     self.pianoroll[ p['pitch'] , onsets[i]+d ] = tmp_velocity
-                    if random_pitch != -1:
-                        self.onsetsroll[ random_pitch , onsets[i]+d ] = tmp_velocity
+                    if random_pitch >= 0:
+                        self.pianoroll[ random_pitch , onsets[i]+d ] = tmp_velocity
         
         # keep only active range of notes
         # self.pianoroll = self.pianoroll[40:95, :]
