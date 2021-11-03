@@ -18,24 +18,32 @@ def get_midi_full_fretboard():
 
 def make_all_binary_tabs_for_binary_midi(m):
     midi_notes = np.array( np.where( m )[0] )
-    # print('midi_notes: ', midi_notes)
+    print('midi_notes: ', midi_notes)
     # keep structures as [pitch, string, fret]
     all_structs = []
     f = get_midi_full_fretboard()
     for i, n in enumerate(midi_notes):
+        print('i: ', i)
         # in case n is out of fretboard range
+        n_modified = False
         while n < np.min(f):
             n += 12
+            n_modified = True
             # print('n1: ', n)
         while n > np.max(f):
             # print('n2: ', n)
             n -= 12
-        tmp_where = np.where( n == f )
-        # print('tmp_where: ', tmp_where)
-        tmp_strings_of_note = tmp_where[0]
-        tmp_frets_of_note = tmp_where[1]
-        for j in range(len(tmp_strings_of_note)):
-            all_structs.append( [n, tmp_strings_of_note[j], tmp_frets_of_note[j]] )
+            n_modified = True
+        if n_modified and n in midi_notes:
+            midi_notes = np.delete( midi_notes, i )
+            print('delete - midi_notes: ', midi_notes)
+        else:
+            tmp_where = np.where( n == f )
+            # print('tmp_where: ', tmp_where)
+            tmp_strings_of_note = tmp_where[0]
+            tmp_frets_of_note = tmp_where[1]
+            for j in range(len(tmp_strings_of_note)):
+                all_structs.append( [n, tmp_strings_of_note[j], tmp_frets_of_note[j]] )
     print('all_structs: ')
     print(all_structs)
     # make all combinations
