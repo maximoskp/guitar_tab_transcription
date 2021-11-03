@@ -19,6 +19,62 @@ def get_midi_full_fretboard():
 def make_all_binary_tabs_for_binary_midi(m):
     midi_notes = np.array( np.where( m )[0] )
     # print('midi_notes: ', midi_notes)
+    # keep structures as [pitch, string, fret]
+    all_structs = []
+    f = get_midi_full_fretboard()
+    for i, n in enumerate(midi_notes):
+        # in case n is out of fretboard range
+        while n < np.min(f):
+            n += 12
+            # print('n1: ', n)
+        while n > np.max(f):
+            # print('n2: ', n)
+            n -= 12
+        tmp_where = np.where( n == f )
+        # print('tmp_where: ', tmp_where)
+        tmp_strings_of_note = tmp_where[0]
+        tmp_frets_of_note = tmp_where[1]
+        for j in range(len(tmp_strings_of_note)):
+            all_structs.append( [n, tmp_strings_of_note[j], tmp_frets_of_note[j]] )
+    print('all_structs: ')
+    print(all_structs)
+    # make all combinations
+    all_combinations = list(itertools.combinations( all_structs, min(6, len(midi_notes)) ))
+    print('all_combinations')
+    print(all_combinations)
+    # keep only combinations with unique pitches and unique strings
+    combinations2keep = []
+    for c in all_combinations:
+        tmp_pitches = []
+        tmp_strings = []
+        keep_combination = True
+        for p in c:
+            if p[0] in tmp_pitches or p[1] in tmp_strings:
+                keep_combination = False
+                break
+            else:
+                tmp_pitches.append( p[0] )
+                tmp_strings.append( p[1] )
+        if keep_combination:
+            combinations2keep.append( c )
+    print('combinations2keep')
+    print(combinations2keep)
+    # keep structures as [pitch, string, fret]
+    all_binary_fretboards = []
+    for combination in combinations2keep:
+        b = np.zeros( (6,25) )
+        # get fret for each string
+        # print('c: ', c)
+        for c in combination:
+            b[ c[1], c[2] ] = 1
+        all_binary_fretboards.append( b )
+    return all_binary_fretboards
+    # return combinations2keep
+# end make_all_binary_tabs_for_binary_midi
+
+def make_all_binary_tabs_for_binary_midi_old1(m):
+    midi_notes = np.array( np.where( m )[0] )
+    # print('midi_notes: ', midi_notes)
     # notes number x 6
     strings_notes_matrix = -1*np.ones( (len(midi_notes), 6) ).astype(int)
     f = get_midi_full_fretboard()
@@ -85,6 +141,7 @@ def make_all_binary_tabs_for_binary_midi(m):
         all_binary_fretboards.append( b )
     return all_binary_fretboards
 # end make_all_binary_tabs_for_binary_midi
+
 
 def make_all_binary_tabs_for_binary_midi_old(m):
     midi_notes = np.where( m )[0]
