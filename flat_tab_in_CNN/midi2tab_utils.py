@@ -46,30 +46,41 @@ def make_all_binary_tabs_for_binary_midi(m):
         if len(tmp_where) > 0:
             strings_content[i] = list( tmp_where )
             active_strings.append( i )
-    # print('strings_content: ')
-    # print(strings_content)
+    print('strings_content: ')
+    print(strings_content)
+    print('active_strings: ')
+    print(active_strings)
     v = list( strings_content.values() )
     # print(v)
     all_combinations = list( itertools.product( *v ) )
     # print(len(all_combinations))
+    print(all_combinations)
     # keep only combinations that include single instances of notes
     combinations2keep = []
-    for c in all_combinations:
-        if len( np.unique(c) ) == len( c ):
-            combinations2keep.append(c)
+    if len(all_combinations) == 1:
+        for c in all_combinations[0]:
+            combinations2keep.append( [c] )
+    else:
+        for c in all_combinations:
+            if len( np.unique(c) ) == len( c ):
+                combinations2keep.append(c)
     # print(len(combinations2keep))
+    print(combinations2keep)
     all_binary_fretboards = []
-    for c in combinations2keep:
+    for i_comb, c in enumerate(combinations2keep):
         b = np.zeros( (6,25) )
         # get fret for each string
-        # print('c: ', c)
+        print('c: ', c)
         for i,row_idx in enumerate(c):
-            string = active_strings[i]
+            if len(all_combinations) == 1:
+                string = active_strings[i_comb]
+            else:
+                string = active_strings[i]
             fret = strings_notes_matrix[row_idx, string]
-            # print('i: ', i)
-            # print('row_idx: ', row_idx)
-            # print('string: ', string)
-            # print('fret: ', fret)
+            print('i: ', i)
+            print('row_idx: ', row_idx)
+            print('string: ', string)
+            print('fret: ', fret)
             b[ string, fret ] = 1
         all_binary_fretboards.append( b )
     return all_binary_fretboards
@@ -147,7 +158,7 @@ def midi_and_flat_tab_decision(m, t):
 # end midi_and_flat_tab_decision
 
 
-def show_binary_matrices(bs):
+def show_binary_matrices(bs, pause_time=0.1):
     for b in bs:
         plt.imshow(b, cmap='gray_r')
-        plt.pause(0.1)
+        plt.pause(pause_time)
