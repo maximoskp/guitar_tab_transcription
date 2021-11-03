@@ -6,6 +6,7 @@ Created on Sat Oct 30 21:16:17 2021
 """
 import numpy as np
 import itertools
+import matplotlib.pyplot as plt
 
 def get_midi_full_fretboard():
     proper_tunning = np.array( [64, 59, 55, 50, 45, 40] )
@@ -16,6 +17,65 @@ def get_midi_full_fretboard():
 # end get_midi_full_fretboard
 
 def make_all_binary_tabs_for_binary_midi(m):
+    midi_notes = np.array( np.where( m )[0] )
+    # print('midi_notes: ', midi_notes)
+    # notes number x 6
+    strings_notes_matrix = -1*np.ones( (len(midi_notes), 6) ).astype(int)
+    f = get_midi_full_fretboard()
+    for i, n in enumerate(midi_notes):
+        # in case n is out of fretboard range
+        while n < np.min(f):
+            n += 12
+            # print('n1: ', n)
+        while n > np.max(f):
+            # print('n2: ', n)
+            n -= 12
+        tmp_where = np.where( n == f )
+        # print('tmp_where: ', tmp_where)
+        tmp_strings_of_note = tmp_where[0]
+        tmp_frets_of_note = tmp_where[1]
+        for j in range(len(tmp_strings_of_note)):
+            strings_notes_matrix[ i , tmp_strings_of_note[j] ] = tmp_frets_of_note[j]
+    # print('strings_notes_matrix: ')
+    # print(strings_notes_matrix)
+    # keep nonnegative content of strings
+    strings_content = {}
+    active_strings = []
+    for i in range(strings_notes_matrix.shape[1]):
+        tmp_where = np.where( strings_notes_matrix[:,i] >= 0 )[0]
+        if len(tmp_where) > 0:
+            strings_content[i] = list( tmp_where )
+            active_strings.append( i )
+    # print('strings_content: ')
+    # print(strings_content)
+    v = list( strings_content.values() )
+    # print(v)
+    all_combinations = list( itertools.product( *v ) )
+    # print(len(all_combinations))
+    # keep only combinations that include single instances of notes
+    combinations2keep = []
+    for c in all_combinations:
+        if len( np.unique(c) ) == len( c ):
+            combinations2keep.append(c)
+    # print(len(combinations2keep))
+    all_binary_fretboards = []
+    for c in combinations2keep:
+        b = np.zeros( (6,25) )
+        # get fret for each string
+        # print('c: ', c)
+        for i,row_idx in enumerate(c):
+            string = active_strings[i]
+            fret = strings_notes_matrix[row_idx, string]
+            # print('i: ', i)
+            # print('row_idx: ', row_idx)
+            # print('string: ', string)
+            # print('fret: ', fret)
+            b[ string, fret ] = 1
+        all_binary_fretboards.append( b )
+    return all_binary_fretboards
+# end make_all_binary_tabs_for_binary_midi
+
+def make_all_binary_tabs_for_binary_midi_old(m):
     midi_notes = np.where( m )[0]
     print('midi_notes: ', midi_notes)
     strings_for_notes = []
@@ -34,22 +94,35 @@ def make_all_binary_tabs_for_binary_midi(m):
         strings_for_notes.append( tmp_where[0] )
         frets_for_notes.append( tmp_where[1] )
     # get all combinations of strings
-    # print('strings_for_notes: ', strings_for_notes)
-    all_combinatios = list( itertools.product( *strings_for_notes ) )
-    print('all_combinatios: ', all_combinatios)
+    print('====================================')
+    print('====================================')
+    print('====================================')
+    print('strings_for_notes: ', strings_for_notes)
+    print('frets_for_notes: ', frets_for_notes)
+    print('====================================')
+    print('====================================')
+    print('====================================')
+    all_combinations = list( itertools.product( *strings_for_notes ) )
+    print('len(all_combinations): ', len(all_combinations))
     # keep only combinations with different elements
     combinations2keep = []
-    for c in all_combinatios:
+    for c in all_combinations:
         # check for dublicates
-        if len( list( set( c ) ) ) not in combinations2keep:
-            combinations2keep.append( list(set( c )) )
+        s = list(set( c ))
+        if s not in combinations2keep:
+            combinations2keep.append( s )
     # construct binary fretboard for each string combination
-    # print('combinations2keep: ', combinations2keep)
+    print('len(combinations2keep): ', len(combinations2keep))
+    print('combinations2keep: ', combinations2keep)
     all_binary_fretboards = []
     for c in combinations2keep:
         b = np.zeros( (6,25) )
         # get fret for each string
+        print('c: ', c)
         for i,string in enumerate(c):
+            print('i: ', i)
+            print('string: ', string)
+            print('strings_for_notes[i]: ', strings_for_notes[i])
             fret_idx = np.where(string == strings_for_notes[i])[0][0].astype(int)
             fret = frets_for_notes[i][fret_idx]
             b[ string, fret ] = 1
@@ -72,3 +145,9 @@ def midi_and_flat_tab_decision(m, t):
         all_probs[i] = np.sum( b*t_full )
     return all_binary_tabs[ np.argmax( all_probs ) ]
 # end midi_and_flat_tab_decision
+
+
+def show_binary_matrices(bs):
+    for b in bs:
+        plt.imshow(b, cmap='gray_r')
+        plt.pause(0.1)
