@@ -36,8 +36,8 @@ def make_all_binary_tabs_for_binary_midi(m):
         tmp_frets_of_note = tmp_where[1]
         for j in range(len(tmp_strings_of_note)):
             strings_notes_matrix[ i , tmp_strings_of_note[j] ] = tmp_frets_of_note[j]
-    # print('strings_notes_matrix: ')
-    # print(strings_notes_matrix)
+    print('strings_notes_matrix: ')
+    print(strings_notes_matrix)
     # keep nonnegative content of strings
     strings_content = {}
     active_strings = []
@@ -46,15 +46,15 @@ def make_all_binary_tabs_for_binary_midi(m):
         if len(tmp_where) > 0:
             strings_content[i] = list( tmp_where )
             active_strings.append( i )
-    # print('strings_content: ')
-    # print(strings_content)
-    # print('active_strings: ')
-    # print(active_strings)
+    print('strings_content: ')
+    print(strings_content)
+    print('active_strings: ')
+    print(active_strings)
     v = list( strings_content.values() )
     # print(v)
     all_combinations = list( itertools.product( *v ) )
     # print(len(all_combinations))
-    # print(all_combinations)
+    print(all_combinations)
     # keep only combinations that include single instances of notes
     combinations2keep = []
     if len(all_combinations) == 1:
