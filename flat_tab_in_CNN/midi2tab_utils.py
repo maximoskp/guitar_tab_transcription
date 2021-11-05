@@ -47,26 +47,28 @@ def make_all_binary_tabs_for_binary_midi(m):
     print('all_structs: ')
     print(all_structs)
     # make all combinations
-    all_combinations = list(itertools.combinations( all_structs, min(6, len(midi_notes)) ))
-    print('all_combinations')
-    print(all_combinations)
-    # keep only combinations with unique pitches and unique strings
+    notes2keep = min( 6, len(midi_notes) )
     combinations2keep = []
-    for c in all_combinations:
-        tmp_pitches = []
-        tmp_strings = []
-        keep_combination = True
-        for p in c:
-            if p[0] in tmp_pitches or p[1] in tmp_strings:
-                keep_combination = False
-                break
-            else:
-                tmp_pitches.append( p[0] )
-                tmp_strings.append( p[1] )
-        if keep_combination:
-            combinations2keep.append( c )
-    print('combinations2keep')
-    print(combinations2keep)
+    while len( combinations2keep ) == 0:
+        all_combinations = list(itertools.combinations( all_structs, notes2keep ))
+        print('len(all_combinations)')
+        print(len(all_combinations))
+        for c in all_combinations:
+            tmp_pitches = []
+            tmp_strings = []
+            keep_combination = True
+            for p in c:
+                if p[0] in tmp_pitches or p[1] in tmp_strings:
+                    keep_combination = False
+                    break
+                else:
+                    tmp_pitches.append( p[0] )
+                    tmp_strings.append( p[1] )
+            if keep_combination:
+                combinations2keep.append( c )
+        print('combinations2keep')
+        print(combinations2keep)
+        notes2keep -= 1
     # keep structures as [pitch, string, fret]
     all_binary_fretboards = []
     for combination in combinations2keep:
