@@ -4,6 +4,8 @@ import os
 import sys
 sys.path.insert(1, '..')
 import data_utils
+import matplotlib.pyplot as plt
+import mido
 
 # %%
 
@@ -15,6 +17,7 @@ pieces = os.listdir(folder)
 
 idx = 0
 m, ticks_per_beat = my_read_midi_mido( os.path.join(folder, pieces[idx]) )
+mid = mido.MidiFile( os.path.join(folder, pieces[idx]) )
 duration_events, onset_events = my_chordify(m)
 
 # %%
@@ -23,3 +26,8 @@ tabReadyEvents = onsetEvents2tabreadyEvents(onset_events, parts_per_quarter=tick
 
 # from the following, keep the pianoroll_changes
 trep = data_utils.TrackRepresentation(tabReadyEvents)
+
+# %% 
+
+plt.clf()
+plt.imshow(trep.pianoroll_changes, cmap='gray_r')
