@@ -216,10 +216,13 @@ class GPPieceEvents:
 # end class GPPieceEvents
 
 class TrackRepresentation():
-    def __init__(self, track, piece_name='undefined', track_number=-1, keep_full=False, random_pr=None):
+    def __init__(self, track, piece_name='undefined', track_number=-1, keep_full=False, keep_events=False, random_pr=None):
         self.piece_name = piece_name
         self.track_number = track_number
         self.keep_full= keep_full
+        self.keep_events= keep_events
+        if self.keep_events:
+            self.events = track
         onsets = np.array( [ t['onset_piece'] for t in track ] )
         onsets -= onsets[0]
         g = np.gcd.reduce(onsets)
@@ -277,6 +280,10 @@ class TrackRepresentation():
         d = np.diff(p0, axis=1)
         dsum = np.sum( np.abs(d), axis=0)
         idx2keep = np.append(0, np.where( dsum != 0 )[0] + 1 )
+        if self.keep_events:
+            tmp_all_idxs = np.arange( onsets[-1]+durations[-1] ).astype(int)
+            tmp_nz_idxs = tmp_all_idxs[nz_idxs]
+            self.event_onsets_kept = tmp_nz_idxs[ np.array(idx2keep, dtype=int) ]*g
         
         self.pianoroll_changes = p0[:, idx2keep]
         t0 = self.tablature[:, nz_idxs]
@@ -313,6 +320,19 @@ class TrackRepresentation():
                     plt.text(i, string_height, str(f.astype(int)))
         plt.axis('equal')
     # end plot_tab_part
+
+    def tab2events(self):
+        if not self.keep_events:
+            print('ERROR: events should have been kept')
+            return
+        # start reading midi and tab changes
+        i = 0
+        for ev in self.events:
+            # get pitches of event
+            p = [ n['pitch'] for n in ev.pitches ]
+
+    # end tab2events
+# end TrackRepresentation
 
 class GuitarTabDataset():
     def __init__(self, history=2, task='string_activation',

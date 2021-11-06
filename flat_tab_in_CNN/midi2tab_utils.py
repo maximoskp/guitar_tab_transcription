@@ -18,12 +18,12 @@ def get_midi_full_fretboard():
 
 def make_all_binary_tabs_for_binary_midi(m):
     midi_notes = np.array( np.where( m )[0] )
-    print('midi_notes: ', midi_notes)
+    # print('midi_notes: ', midi_notes)
     # keep structures as [pitch, string, fret]
     all_structs = []
     f = get_midi_full_fretboard()
     for i, n in enumerate(midi_notes):
-        print('i: ', i)
+        # print('i: ', i)
         # in case n is out of fretboard range
         n_modified = False
         while n < np.min(f):
@@ -36,7 +36,7 @@ def make_all_binary_tabs_for_binary_midi(m):
             n_modified = True
         if n_modified and n in midi_notes:
             midi_notes = np.delete( midi_notes, i )
-            print('delete - midi_notes: ', midi_notes)
+            # print('delete - midi_notes: ', midi_notes)
         else:
             tmp_where = np.where( n == f )
             # print('tmp_where: ', tmp_where)
@@ -44,15 +44,15 @@ def make_all_binary_tabs_for_binary_midi(m):
             tmp_frets_of_note = tmp_where[1]
             for j in range(len(tmp_strings_of_note)):
                 all_structs.append( [n, tmp_strings_of_note[j], tmp_frets_of_note[j]] )
-    print('all_structs: ')
-    print(all_structs)
+    # print('all_structs: ')
+    # print(all_structs)
     # make all combinations
     notes2keep = min( 6, len(midi_notes) )
     combinations2keep = []
     while len( combinations2keep ) == 0:
         all_combinations = list(itertools.combinations( all_structs, notes2keep ))
-        print('len(all_combinations)')
-        print(len(all_combinations))
+        # print('len(all_combinations)')
+        # print(len(all_combinations))
         for c in all_combinations:
             tmp_pitches = []
             tmp_strings = []
@@ -66,8 +66,8 @@ def make_all_binary_tabs_for_binary_midi(m):
                     tmp_strings.append( p[1] )
             if keep_combination:
                 combinations2keep.append( c )
-        print('combinations2keep')
-        print(combinations2keep)
+        # print('combinations2keep')
+        # print(combinations2keep)
         notes2keep -= 1
     # keep structures as [pitch, string, fret]
     all_binary_fretboards = []
@@ -102,8 +102,8 @@ def make_all_binary_tabs_for_binary_midi_old1(m):
         tmp_frets_of_note = tmp_where[1]
         for j in range(len(tmp_strings_of_note)):
             strings_notes_matrix[ i , tmp_strings_of_note[j] ] = tmp_frets_of_note[j]
-    print('strings_notes_matrix: ')
-    print(strings_notes_matrix)
+    # print('strings_notes_matrix: ')
+    # print(strings_notes_matrix)
     # keep nonnegative content of strings
     strings_content = {}
     active_strings = []
@@ -112,10 +112,6 @@ def make_all_binary_tabs_for_binary_midi_old1(m):
         if len(tmp_where) > 0:
             strings_content[i] = list( tmp_where )
             active_strings.append( i )
-    print('strings_content: ')
-    print(strings_content)
-    print('active_strings: ')
-    print(active_strings)
     v = list( strings_content.values() )
     # print(v)
     all_combinations = list( itertools.product( *v ) )
@@ -215,13 +211,14 @@ def midi_and_flat_tab_decision(m, t):
     # print('t: ', t)
     t_full = np.reshape( t , [6,25] )
     all_binary_tabs = make_all_binary_tabs_for_binary_midi( m )
-    print('len( all_binary_tabs): ', len(all_binary_tabs))
+    # print('len( all_binary_tabs): ', len(all_binary_tabs))
     if len(all_binary_tabs) == 0:
         print(m)
     all_probs = np.zeros( len(all_binary_tabs) )
     for i,b in enumerate( all_binary_tabs ):
         all_probs[i] = np.sum( b*t_full )
-    return all_binary_tabs[ np.argmax( all_probs ) ]
+    binary_winner = all_binary_tabs[ np.argmax( all_probs ) ]
+    return binary_winner
 # end midi_and_flat_tab_decision
 
 
