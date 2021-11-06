@@ -15,7 +15,7 @@ ChordifiedEvent = namedtuple("Event", "time duration pitches onset velocities")
 # Event = namedtuple("Event", "time duration data")
 # ChordifiedEvent = namedtuple("Event", "time duration data onset")
 
-def my_read_midi_mido(file):
+def my_read_midi_mido(file, trackIDXs2keep=None):
     """
     Read notes with onset and duration from MIDI file. Time is specified in beats.
     :param file: path to MIDI file
@@ -26,7 +26,11 @@ def my_read_midi_mido(file):
     ticks_per_beat = mid.ticks_per_beat
     # to get the name of the piece
     # piece_name = file.split(os.sep)[-1].split['.'][0]
-    for track_id, t in enumerate(mid.tracks):
+    if trackIDXs2keep is not None:
+        tracks2keep = mid.tracks
+    else:
+        tracks2keep = mid.tracks[trackIDXs2keep]
+    for track_id, t in enumerate(tracks2keep):
         time = 0
         track = []
         end_of_track = False
