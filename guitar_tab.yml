@@ -2,24 +2,175 @@ name: guitar_tab
 channels:
   - defaults
 dependencies:
-  - ca-certificates=2021.7.5
-  - certifi=2021.5.30
+  - alabaster=0.7.12
+  - appdirs=1.4.4
+  - applaunchservices=0.2.1
+  - appnope=0.1.2
+  - argcomplete=1.12.3
+  - argh=0.26.2
+  - arrow=0.13.1
+  - astroid=2.6.6
+  - async_generator=1.10
+  - atomicwrites=1.4.0
+  - attrs=21.2.0
+  - autopep8=1.5.7
+  - babel=2.9.1
+  - backcall=0.2.0
+  - binaryornot=0.4.4
+  - black=19.10b0
+  - bleach=4.0.0
+  - brotlipy=0.7.0
+  - ca-certificates=2021.9.30
+  - certifi=2021.10.8
+  - cffi=1.14.6
+  - chardet=4.0.0
+  - charset-normalizer=2.0.4
+  - click=8.0.1
+  - cloudpickle=2.0.0
+  - cookiecutter=1.7.2
+  - cryptography=3.4.8
+  - dbus=1.13.18
+  - debugpy=1.4.1
+  - decorator=5.1.0
+  - defusedxml=0.7.1
+  - diff-match-patch=20200713
+  - docutils=0.17.1
+  - entrypoints=0.3
+  - expat=2.4.1
+  - flake8=3.9.2
+  - gettext=0.21.0
+  - glib=2.69.1
+  - icu=58.2
+  - idna=3.2
+  - imagesize=1.2.0
+  - importlib-metadata=4.8.1
+  - importlib_metadata=4.8.1
+  - inflection=0.5.1
+  - intervaltree=3.1.0
+  - ipykernel=6.4.1
+  - ipython=7.27.0
+  - ipython_genutils=0.2.0
+  - isort=5.9.3
+  - jedi=0.18.0
+  - jinja2=2.11.3
+  - jinja2-time=0.2.0
+  - jpeg=9d
+  - jsonschema=3.2.0
+  - jupyter_client=6.1.12
+  - jupyter_core=4.8.1
+  - jupyterlab_pygments=0.1.2
+  - keyring=23.1.0
+  - lazy-object-proxy=1.6.0
+  - libcxx=12.0.0
+  - libffi=3.3
+  - libiconv=1.16
+  - libpng=1.6.37
+  - libsodium=1.0.18
+  - libspatialindex=1.9.3
+  - libxml2=2.9.12
+  - llvm-openmp=12.0.0
+  - markupsafe=1.1.1
+  - matplotlib-inline=0.1.2
+  - mccabe=0.6.1
+  - mistune=0.8.4
+  - mypy_extensions=0.4.3
+  - nbclient=0.5.3
+  - nbconvert=6.1.0
+  - nbformat=5.1.3
+  - ncurses=6.2
+  - nest-asyncio=1.5.1
+  - numpydoc=1.1.0
   - openssl=1.1.1l
+  - packaging=21.0
+  - pandocfilters=1.4.3
+  - parso=0.8.2
+  - pathspec=0.7.0
+  - pcre=8.45
+  - pexpect=4.8.0
+  - pickleshare=0.7.5
   - pip=21.0.1
+  - pluggy=1.0.0
+  - poyo=0.5.0
+  - prompt-toolkit=3.0.20
+  - psutil=5.8.0
+  - ptyprocess=0.7.0
+  - pycodestyle=2.7.0
+  - pycparser=2.20
+  - pydocstyle=6.1.1
+  - pyflakes=2.3.1
+  - pygments=2.10.0
+  - pylint=2.9.6
+  - pyls-spyder=0.4.0
+  - pyopenssl=20.0.1
+  - pyparsing=2.4.7
+  - pyqt=5.9.2
+  - pyrsistent=0.17.3
+  - pysocks=1.7.1
   - python=3.7.11
+  - python-dateutil=2.8.2
+  - python-lsp-black=1.0.0
+  - python-lsp-jsonrpc=1.0.0
+  - python-lsp-server=1.2.4
+  - python-slugify=5.0.2
+  - python.app=3
+  - pytz=2021.3
+  - pyyaml=5.4.1
+  - pyzmq=22.2.1
+  - qdarkstyle=3.0.2
+  - qstylizer=0.1.10
+  - qt=5.9.7
+  - qtawesome=1.0.2
+  - qtconsole=5.1.1
+  - qtpy=1.10.0
+  - readline=8.1
+  - regex=2021.8.3
+  - requests=2.26.0
+  - rope=0.19.0
+  - rtree=0.9.7
   - setuptools=52.0.0
+  - sip=4.19.8
+  - snowballstemmer=2.1.0
+  - sortedcontainers=2.4.0
+  - sphinx=4.2.0
+  - sphinxcontrib-applehelp=1.0.2
+  - sphinxcontrib-devhelp=1.0.2
+  - sphinxcontrib-htmlhelp=2.0.0
+  - sphinxcontrib-jsmath=1.0.1
+  - sphinxcontrib-qthelp=1.0.3
+  - sphinxcontrib-serializinghtml=1.1.5
+  - spyder=5.1.5
+  - spyder-kernels=2.1.3
   - sqlite=3.36.0
+  - testpath=0.5.0
+  - text-unidecode=1.3
+  - textdistance=4.2.1
+  - three-merge=0.1.1
+  - tinycss=0.4
   - tk=8.6.10
+  - toml=0.10.2
+  - tornado=6.1
+  - traitlets=5.1.0
+  - typed-ast=1.4.3
+  - typing_extensions=3.10.0.2
+  - ujson=4.0.2
+  - unidecode=1.2.0
+  - watchdog=2.1.3
+  - wcwidth=0.2.5
+  - webencodings=0.5.1
   - wheel=0.37.0
+  - whichcraft=0.6.1
+  - wrapt=1.12.1
+  - wurlitzer=2.1.1
   - xz=5.2.5
+  - yaml=0.2.5
+  - yapf=0.31.0
+  - zeromq=4.3.4
   - zlib=1.2.11
   - pip:
     - absl-py==0.13.0
     - astunparse==1.6.3
-    - attrs==21.2.0
     - cached-property==1.5.2
     - cachetools==4.2.2
-    - charset-normalizer==2.0.4
     - clang==5.0
     - cycler==0.10.0
     - flatbuffers==1.12
@@ -29,26 +180,26 @@ dependencies:
     - google-pasta==0.2.0
     - grpcio==1.39.0
     - h5py==3.1.0
-    - idna==3.2
-    - importlib-metadata==4.8.1
     - joblib==1.0.1
+    - jsonpickle==2.0.0
     - keras==2.6.0
     - keras-preprocessing==1.1.2
     - kiwisolver==1.3.2
     - markdown==3.3.4
     - matplotlib==3.4.3
+    - mido==1.2.10
+    - more-itertools==8.10.0
+    - music21==7.1.0
     - numpy==1.19.5
     - oauthlib==3.1.1
     - opt-einsum==3.3.0
     - pickle5==0.0.11
     - pillow==8.3.2
+    - pitchscapes==0.1.6
     - protobuf==3.17.3
     - pyasn1==0.4.8
     - pyasn1-modules==0.2.8
     - pyguitarpro==0.8
-    - pyparsing==2.4.7
-    - python-dateutil==2.8.2
-    - requests==2.26.0
     - requests-oauthlib==1.3.0
     - rsa==4.7.2
     - scikit-learn==0.24.2
@@ -62,9 +213,10 @@ dependencies:
     - tensorflow-estimator==2.6.0
     - termcolor==1.1.0
     - threadpoolctl==2.2.0
+    - torch==1.10.0
     - typing-extensions==3.7.4.3
     - urllib3==1.26.6
+    - webcolors==1.11.1
     - werkzeug==2.0.1
-    - wrapt==1.12.1
     - zipp==3.5.0
-prefix: /home/maximos/anaconda3/envs/guitar_tab
+prefix: /Users/max/opt/anaconda3/envs/guitar_tab

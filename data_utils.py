@@ -295,7 +295,7 @@ class TrackRepresentation():
     # end plot_pianoroll_part
     
     def plot_tab_part(self, start_idx=0, end_idx=50):
-        tablature_part = self.tablature[:,start_idx:end_idx]
+        tablature_part = self.tablature_changes[:,start_idx:end_idx]
         x = np.arange(tablature_part.shape[1])
         x_length = len(x)
         y_height = x_length/5.

@@ -26,7 +26,7 @@ def my_read_midi_mido(file, trackIDXs2keep=None):
     ticks_per_beat = mid.ticks_per_beat
     # to get the name of the piece
     # piece_name = file.split(os.sep)[-1].split['.'][0]
-    if trackIDXs2keep is not None:
+    if trackIDXs2keep is None:
         tracks2keep = mid.tracks
     else:
         tracks2keep = mid.tracks[trackIDXs2keep]
