@@ -8,8 +8,10 @@ Created on Sat Aug 28 07:29:30 2021
 import os
 import guitarpro as gp
 
-folder = 'TextoGP/gp_token_examples/A/Aguado, Dionso'
-file = 'Aguado, Dionso - Walzer.gp4'
+# folder = 'TextoGP/gp_token_examples/A/Aguado, Dionso'
+# file = 'Aguado, Dionso - Walzer.gp4'
+folder = 'data/testGPfiles'
+file = 'Abba - Gimme! Gimme! Gimme!.gp4'
 
 # %% 
 

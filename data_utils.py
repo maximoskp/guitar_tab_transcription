@@ -298,7 +298,7 @@ class TrackRepresentation():
     # end constructor
     
     def plot_pianoroll_part(self, start_idx=0, end_idx=50):
-        plt.imshow( self.pianoroll[:,start_idx:end_idx], cmap='gray_r', origin='lower' )
+        plt.imshow( self.pianoroll_changes[:,start_idx:end_idx], cmap='gray_r', origin='lower' )
     # end plot_pianoroll_part
     
     def plot_tab_part(self, start_idx=0, end_idx=50):
@@ -459,3 +459,5 @@ class GuitarTabDataset():
             return [self.x_train, self.y_train, self.x_valid, self.y_valid, self.x_test, self.y_test]
         else:
             return [self.x_train, self.y_train, self.x_test, self.y_test]
+    # end load_full_tabs
+# end GuitarTabDataset

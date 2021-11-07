@@ -8,6 +8,7 @@ Created on Fri Aug 27 09:39:25 2021
 import numpy as np
 import mido
 from collections import namedtuple
+import guitarpro as gp
 
 Event = namedtuple("Event", "time duration pitch velocity")
 ChordifiedEvent = namedtuple("Event", "time duration pitches onset velocities")
@@ -235,3 +236,124 @@ def my_piano_roll(c, min_pitch=None, max_pitch=None, return_range=False,
     else:
         return ret
 # end my_piano_roll
+
+'''
+Song has
+tracks (list)
+
+Track has
+Reference to song
+measures (list)
+
+Measure has
+measureHeader 
+Reference to track
+Voices (list)
+
+Voice has
+Reference to measure
+Beats (list)
+
+Beat has
+Reference to voice
+Notes (list)
+Duration
+Start (time in midi ticks?)
+startInMeasure (time in midi ticks?) 
+
+Note has:
+Reference to beat
+realValue: midi pitch
+Value: fret
+String: string
+Velocity: velocity
+durationPercentage: duration
+
+Duration has:
+Value (quarters?)
+'''
+
+def tabEvents2gp5(tabEvents, parts_per_quarter=480):
+    ppq_mult = parts_per_quarter
+    
+    time_sig_numerator = 4
+    time_sig_denominator = 4
+    
+    first_measure_start = 960
+    measure_duration = parts_per_quarter*4*time_sig_numerator/time_sig_denominator # todo involve time sig numerator
+    current_measure_time = first_measure_start
+    
+    song = gp.Song()
+    
+    tracks = [ gp.Track( song ) ]
+    
+    # TODO: add time signature to header
+    # measureHeader = gp.MeasureHeader(start=first_measure_start)
+    measureHeader = gp.MeasureHeader()
+    
+    # only for first measure
+    measures = [ gp.Measure( tracks[0] , measureHeader ) ]
+    measures[0].start = first_measure_start
+    voices = [ gp.Voice( measures[0] ) ]
+    beats = []
+    for t in tabEvents:
+        if t['onset_piece'] + first_measure_start >= current_measure_time + measure_duration:
+            # close current measure
+            voices[0].beats = beats
+            measures[-1].voices = voices
+            current_measure_time = current_measure_time + measure_duration
+            # make new measure
+            beats = []
+            measures.append( gp.Measure( tracks[0] , gp.MeasureHeader() ) )
+            measures[-1].start = current_measure_time
+            voices = [ gp.Voice( measures[-1] ) ]
+        beat = gp.Beat( voices[0] )
+        beat.start = t['onset_piece'] + first_measure_start
+        # beat.startInMeasure = beat.start - current_measure_time
+        beat.duration = gp.Duration( int( 8*max( 1, ppq_mult/max(480, t['duration']) ) ) )
+        for p in t['pitches']:
+            n = gp.Note( beat, p['fret'], p['velocity'], p['string']+1 )
+            n.durationPercent = p['duration_percentage']
+            beat.notes.append( n )
+        beats.append( beat )
+    # close what's left
+    voices[0].beats = beats
+    measures[-1].voices = voices
+    # current_measure_time = current_measure_time + measure_duration
+    tracks[0].measures = measures
+    song.tracks = tracks
+    return song
+# end tabEvents2gp5
+
+def tabEvents2gp5_old(tabEvents, parts_per_quarter=480):
+    ppq_mult = parts_per_quarter
+    time_sig_numerator = 4
+    time_sig_denominator = 4
+    measure_duration = parts_per_quarter*4*time_sig_numerator/time_sig_denominator # todo involve time sig numerator
+    
+    song = gp.Song()
+    
+    tracks = [ gp.Track( song ) ]
+    
+    measureHeader = gp.MeasureHeader()
+    
+    measures = [ gp.Measure( tracks[0] , measureHeader ) ]
+    voices = [ gp.Voice( measures[0] ) ]
+    
+    # beats = [ gp.Beat( voices[0] ) ]
+    beats = []
+    for t in tabEvents:
+        beat = gp.Beat( voices[0] )
+        beat.start = t['onset_piece']
+        beat.duration = gp.Duration( int( 8*max( 1, ppq_mult/max(480, t['duration']) ) ) )
+        for p in t['pitches']:
+            n = gp.Note( beat, p['fret'], p['velocity'], p['string']+1 )
+            n.durationPercent = p['duration_percentage']
+            beat.notes.append( n )
+        beats.append( beat )
+    voices[0].beats = beats
+    measures[0].voices = voices
+    tracks[0].measures = measures
+    song.tracks = tracks
+    return song
+# end tabEvents2gp5
