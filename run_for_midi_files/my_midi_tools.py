@@ -310,7 +310,7 @@ def tabEvents2gp5(tabEvents, parts_per_quarter=480):
         beat = gp.Beat( voices[0] )
         beat.start = t['onset_piece'] + first_measure_start
         # beat.startInMeasure = beat.start - current_measure_time
-        beat.duration = gp.Duration( int( 8*max( 1, ppq_mult/max(480, t['duration']) ) ) )
+        beat.duration = gp.Duration( int( 4*max( 1, ppq_mult/max(1, t['duration']) ) ) )
         for p in t['pitches']:
             n = gp.Note( beat, p['fret'], p['velocity'], p['string']+1 )
             n.durationPercent = p['duration_percentage']
@@ -342,10 +342,11 @@ def tabEvents2gp5_old(tabEvents, parts_per_quarter=480):
     
     # beats = [ gp.Beat( voices[0] ) ]
     beats = []
-    for t in tabEvents:
+    for t in tabEvents[:16]:
         beat = gp.Beat( voices[0] )
         beat.start = t['onset_piece']
-        beat.duration = gp.Duration( int( 8*max( 1, ppq_mult/max(480, t['duration']) ) ) )
+        print(beat.start)
+        beat.duration = gp.Duration( int( 8*max( 1, ppq_mult/max(1, t['duration']) ) ) )
         for p in t['pitches']:
             n = gp.Note( beat, p['fret'], p['velocity'], p['string']+1 )
             n.durationPercent = p['duration_percentage']

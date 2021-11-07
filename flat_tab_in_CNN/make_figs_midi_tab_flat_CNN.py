@@ -56,7 +56,6 @@ for i, ev in enumerate(tabReadyEvents):
             ev['pitches'][ii]['pitch'] = event_pitches[ii]
         while event_pitches[ii] > np.max(midi_fretboard):
             event_pitches[ii] -= 12
-            ev['pitches'] = event_pitches
             ev['pitches'][ii]['pitch'] = event_pitches[ii]
     # print('event_pitches: ', event_pitches)
     midi_frame = np.zeros( 128 ).astype(int)
