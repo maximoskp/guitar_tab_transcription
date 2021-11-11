@@ -22,7 +22,8 @@ sys.path.insert(1, '..')
 import data_utils
 sys.path.insert(1, '../run_for_midi_files')
 from my_midi_tools import my_piano_roll, onsetEvents2tabreadyEvents
-from my_midi_tools import my_chordify, my_read_midi_mido
+from my_midi_tools import my_chordify, my_read_midi_mido, tabEvents2gp5
+import guitarpro as gp
 
 # load model
 model = keras.models.load_model( '../models/tab_rand_flat_CNN_out/tab_rand_flat_CNN_out_current_best.hdf5' )
@@ -31,10 +32,10 @@ model = keras.models.load_model( '../models/tab_rand_flat_CNN_out/tab_rand_flat_
 folder = '../data/guitar_midi_files/testfiles'
 pieces = os.listdir(folder)
 
-idx = 2
+idx = 3
 # TODO: get tempo when reading midi
 # TODO: get time signature
-m, ticks_per_beat = my_read_midi_mido( os.path.join(folder, pieces[idx]) )
+m, ticks_per_beat, metadata = my_read_midi_mido( os.path.join(folder, pieces[idx]) )
 duration_events, onset_events = my_chordify(m)
 
 tabReadyEvents = onsetEvents2tabreadyEvents(onset_events, parts_per_quarter=ticks_per_beat)
@@ -76,3 +77,5 @@ for i, ev in enumerate(tabReadyEvents):
     tmp_tab[:150] = np.reshape(decision, 150 )
 
 # write gp5
+s = tabEvents2gp5( tabReadyEvents, metadata=metadata )
+gp.write(s, 'gp_files/' + pieces[idx].split('.')[0] + '.gp4' )

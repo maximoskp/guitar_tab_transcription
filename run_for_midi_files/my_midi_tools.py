@@ -23,6 +23,30 @@ def my_read_midi_mido(file, trackIDXs2keep=None):
     :return: sorted list of pitch Events
     """
     mid = mido.MidiFile(file)
+    # look for meta information
+    tempo = 120
+    tempo_set = False
+    ts_numerator = 4
+    ts_denominator = 4
+    ts_set = False
+    for track in mid.tracks:
+        for message in track:
+            if message.type == 'set_tempo' and not tempo_set:
+                tempo = message.tempo/10000
+                tempo_set = True
+            if message.type == 'time_signature' and not ts_set:
+                ts_numerator = message.numerator
+                ts_denominator = message.denominator
+                ts_set = True
+            if ts_set and tempo_set:
+                break
+        if ts_set and tempo_set:
+            break
+    metadata = {
+        'tempo': tempo,
+        'ts_numerator': ts_numerator,
+        'ts_denominator': ts_denominator
+    }
     piece = []
     ticks_per_beat = mid.ticks_per_beat
     # to get the name of the piece
@@ -88,7 +112,7 @@ def my_read_midi_mido(file, trackIDXs2keep=None):
         # piece.append( track )
         # then we need to sort each track in piece
         # and run the remaining scripts per track
-    return list(sorted(piece, key=lambda x: x.time)), ticks_per_beat
+    return list(sorted(piece, key=lambda x: x.time)), ticks_per_beat, metadata
 # end my_read_midi_mido
 
 def empty_tabready_event_dict():
@@ -273,23 +297,33 @@ Duration has:
 Value (quarters?)
 '''
 
-def tabEvents2gp5(tabEvents, parts_per_quarter=480):
+def tabEvents2gp5(tabEvents, parts_per_quarter=480, metadata=None):
     ppq_mult = parts_per_quarter
     
-    time_sig_numerator = 4
-    time_sig_denominator = 4
+    # time_sig_numerator = 4
+    # time_sig_denominator = 4
+    if metadata is None:
+        tempo = 60
+        time_sig_numerator = 4
+        time_sig_denominator = 4
+    else:
+        tempo = metadata['tempo']
+        time_sig_numerator = metadata['ts_numerator']
+        time_sig_denominator = metadata['ts_denominator']
     
     first_measure_start = 960
     measure_duration = parts_per_quarter*4*time_sig_numerator/time_sig_denominator # todo involve time sig numerator
     current_measure_time = first_measure_start
     
-    song = gp.Song()
+    song = gp.Song(tempo=tempo)
+    den = gp.models.Duration(time_sig_denominator)
+    ts = gp.models.TimeSignature( time_sig_numerator, den )
     
     tracks = [ gp.Track( song ) ]
     
     # TODO: add time signature to header
     # measureHeader = gp.MeasureHeader(start=first_measure_start)
-    measureHeader = gp.MeasureHeader()
+    measureHeader = gp.MeasureHeader(timeSignature=ts)
     
     # only for first measure
     measures = [ gp.Measure( tracks[0] , measureHeader ) ]
@@ -304,7 +338,7 @@ def tabEvents2gp5(tabEvents, parts_per_quarter=480):
             current_measure_time = current_measure_time + measure_duration
             # make new measure
             beats = []
-            measures.append( gp.Measure( tracks[0] , gp.MeasureHeader() ) )
+            measures.append( gp.Measure( tracks[0] , gp.MeasureHeader(timeSignature=ts) ) )
             measures[-1].start = current_measure_time
             voices = [ gp.Voice( measures[-1] ) ]
         beat = gp.Beat( voices[0] )
