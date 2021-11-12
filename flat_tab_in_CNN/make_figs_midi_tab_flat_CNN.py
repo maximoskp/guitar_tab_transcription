@@ -32,7 +32,7 @@ model = keras.models.load_model( '../models/tab_rand_flat_CNN_out/tab_rand_flat_
 folder = '../data/guitar_midi_files/testfiles'
 pieces = os.listdir(folder)
 
-idx = 3
+idx = 1
 # TODO: get tempo when reading midi
 # TODO: get time signature
 m, ticks_per_beat, metadata = my_read_midi_mido( os.path.join(folder, pieces[idx]) )

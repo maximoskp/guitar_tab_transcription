@@ -72,12 +72,26 @@ def make_all_binary_tabs_for_binary_midi(m):
     # keep structures as [pitch, string, fret]
     all_binary_fretboards = []
     for combination in combinations2keep:
+        # print('combination: ', combination)
+        # keep non zero frets for observing impossibility of fingering
+        nz_frets = [];
         b = np.zeros( (6,25) )
         # get fret for each string
         # print('c: ', c)
         for c in combination:
             b[ c[1], c[2] ] = 1
-        all_binary_fretboards.append( b )
+            if c[2] != 0:
+                nz_frets.append( c[2] )
+        # check if nz frets constitute a doable box
+        doable_box = True
+        if len(nz_frets) > 1:
+            nz_frets_np = np.array( nz_frets )
+            if np.max( nz_frets_np ) - np.min( nz_frets_np ) > 6:
+                doable_box = False
+                # print('nz_frets: ', nz_frets)
+                # print('non doable: ', combination)
+        if doable_box:
+            all_binary_fretboards.append( b )
     return all_binary_fretboards
     # return combinations2keep
 # end make_all_binary_tabs_for_binary_midi
