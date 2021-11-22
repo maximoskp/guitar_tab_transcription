@@ -19,6 +19,7 @@ sys.path.insert(1, '..')
 import data_utils
 
 from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras import layers
 
 with open('..' + os.sep + 'data' + os.sep + 'flat_tablature_dataset.pickle', 'rb') as handle:
     d = pickle.load(handle)
@@ -29,6 +30,17 @@ x_valid = d['x_valid'].T
 y_valid = d['y_valid'].T
 x_test = d['x_test'].T
 y_test = d['y_test'].T
+
+
+x_train = x_train[:,:128]
+x_valid = x_valid[:,:128]
+x_test = x_test[:,:128]
+
+
+print('x_train:', x_train.shape)
+print('y_train:', y_train.shape)
+
+# aaaa
 
 num_filters = 128
 conv_decoder = keras.models.Sequential([
@@ -56,8 +68,10 @@ model.add(keras.layers.Dense(6*num_filters//2, activation='selu'))
 model.add(keras.layers.Dropout(0.3))
 model.add(keras.layers.BatchNormalization())
 # to apply lstm, timesteps need to be keept in the input
-# model.add(keras.layers.LSTM(6*num_filters//2, activation='selu'))
+model.add(keras.layers.Reshape([1,6*num_filters//2]))
+model.add(keras.layers.LSTM(6*num_filters//2, activation='selu'))
 model.add(keras.layers.Reshape([1,6,num_filters//2]))
+# model.add(layers.LSTM(512))
 model.add(conv_decoder)
 model.add(out_layer)
 
