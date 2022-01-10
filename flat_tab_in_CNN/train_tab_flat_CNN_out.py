@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 sys.path.insert(1, '..')
 import data_utils
 
-from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger
 
 with open('..' + os.sep + 'data' + os.sep + 'flat_tablature_dataset.pickle', 'rb') as handle:
     d = pickle.load(handle)
@@ -81,8 +81,10 @@ checkpoint_current_best = ModelCheckpoint(filepath=filepath_current_best,
                             save_best_only=True,
                             mode='min')
 
+csv_logger = CSVLogger('../models/tab_flat_CNN_out/flat_tab_logger.csv', append=True, separator=';')
+
 history = model.fit( x_train, y_train, epochs=1000, batch_size=16,
-                    validation_data=(x_valid,y_valid), callbacks=[checkpoint, checkpoint_current_best])
+                    validation_data=(x_valid,y_valid), callbacks=[checkpoint, checkpoint_current_best, csv_logger])
 
 # model.save('models/tab_flat_ANN.h5')
 
