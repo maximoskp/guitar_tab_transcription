@@ -64,3 +64,28 @@ for i in session_ids:
         # plt.title('input')
         os.makedirs( '../figs/tab_rand_flat_CNN_out/session_'+str(i), exist_ok=True )
         fig.savefig( '../figs/tab_rand_flat_CNN_out/session_'+str(i)+'/fig_'+str(j)+'.png', dpi=300 )
+
+
+# %% training curves
+
+import pandas as pd
+
+df = pd.read_csv('../models/tab_rand_flat_CNN_out/flat_tab_logger.csv', delimiter=';')
+
+losses = df[['loss','val_loss']]
+cossims = df[['cosine_similarity','val_cosine_similarity']]
+argmin_epoch = losses['val_loss'].argmin()
+print('argmin_epoch:', argmin_epoch)
+
+# save figures
+os.makedirs('../figs/training_curves', exist_ok=True)
+fig1 = losses.plot().get_figure()
+fig1.savefig('../figs/training_curves/' + 'rand_losses.pdf')
+fig2 = cossims.plot().get_figure()
+fig2.savefig('../figs/training_curves/' + 'rand_cossims.pdf')
+
+original_stdout = sys.stdout
+with open('../figs/training_curves/rand_best_epoch.txt', 'w') as f:
+    sys.stdout = f
+    print(df.iloc[argmin_epoch+1])
+    sys.stdout = original_stdout
