@@ -32,6 +32,7 @@ session_ids = np.random.choice(y_test.shape[0]-frames_per_session, sessions_num,
 
 for i in session_ids:
     for j in range(frames_per_session):
+        print('session: ' + str(i) + ' - frame: ' + str(j))
         y_pred = model.predict( [x_test[i+j:i+j+1]] )
         midi = x_test[i+j:i+j+1, :128]
         decision = m2t.midi_and_flat_tab_decision(midi[0], y_pred[0])
