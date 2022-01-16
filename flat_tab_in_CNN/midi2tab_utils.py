@@ -16,12 +16,70 @@ def get_midi_full_fretboard():
     return midi_full_fretboard
 # end get_midi_full_fretboard
 
+def make_combinations2keep( all_structs, notes2keep ):
+    print('making combinations2keep')
+    combinations2keep = []
+    while len( combinations2keep ) == 0:
+        all_combinations = list(itertools.combinations( all_structs, notes2keep ))
+        print('total combinations to examine: ', len(all_combinations))
+        # print('len(all_combinations)')
+        # print(len(all_combinations))
+        for c in all_combinations:
+            tmp_pitches = []
+            tmp_strings = []
+            keep_combination = True
+            for p in c:
+                if p[0] in tmp_pitches or p[1] in tmp_strings:
+                    keep_combination = False
+                    break
+                else:
+                    tmp_pitches.append( p[0] )
+                    tmp_strings.append( p[1] )
+            if keep_combination:
+                combinations2keep.append( c )
+        # print('combinations2keep')
+        # print(combinations2keep)
+        print('combinations to keep: ', len(combinations2keep))
+        if len( combinations2keep ) == 0:
+            print('no combination found - reducing notes2keep to: ' + str(notes2keep-1))
+            notes2keep -= 1
+    return combinations2keep
+# end make_combinations2keep
+
+def make_binary_fretboards( combinations2keep ):
+    print('making binary_fretboards')
+    all_binary_fretboards = []
+    for combination in combinations2keep:
+        # print('combination: ', combination)
+        # keep non zero frets for observing impossibility of fingering
+        nz_frets = [];
+        b = np.zeros( (6,25) )
+        # get fret for each string
+        # print('c: ', c)
+        for c in combination:
+            b[ c[1], c[2] ] = 1
+            if c[2] != 0:
+                nz_frets.append( c[2] )
+        # check if nz frets constitute a doable box
+        doable_box = True
+        if len(nz_frets) > 1:
+            nz_frets_np = np.array( nz_frets )
+            if np.max( nz_frets_np ) - np.min( nz_frets_np ) > 6:
+                doable_box = False
+                # print('nz_frets: ', nz_frets)
+                # print('non doable: ', combination)
+        if doable_box:
+            all_binary_fretboards.append( b )
+    return all_binary_fretboards
+# end make_binary_fretboards
+
 def make_all_binary_tabs_for_binary_midi(m):
     midi_notes = np.array( np.where( m )[0] )
     # print('midi_notes: ', midi_notes)
     # keep structures as [pitch, string, fret]
     all_structs = []
     f = get_midi_full_fretboard()
+    # print('fretboard: ', f)
     for i, n in enumerate(midi_notes):
         # print('i: ', i)
         # in case n is out of fretboard range
@@ -48,50 +106,14 @@ def make_all_binary_tabs_for_binary_midi(m):
     # print(all_structs)
     # make all combinations
     notes2keep = min( 6, len(midi_notes) )
-    combinations2keep = []
-    while len( combinations2keep ) == 0:
-        all_combinations = list(itertools.combinations( all_structs, notes2keep ))
-        # print('len(all_combinations)')
-        # print(len(all_combinations))
-        for c in all_combinations:
-            tmp_pitches = []
-            tmp_strings = []
-            keep_combination = True
-            for p in c:
-                if p[0] in tmp_pitches or p[1] in tmp_strings:
-                    keep_combination = False
-                    break
-                else:
-                    tmp_pitches.append( p[0] )
-                    tmp_strings.append( p[1] )
-            if keep_combination:
-                combinations2keep.append( c )
-        # print('combinations2keep')
-        # print(combinations2keep)
-        notes2keep -= 1
-    # keep structures as [pitch, string, fret]
     all_binary_fretboards = []
-    for combination in combinations2keep:
-        # print('combination: ', combination)
-        # keep non zero frets for observing impossibility of fingering
-        nz_frets = [];
-        b = np.zeros( (6,25) )
-        # get fret for each string
-        # print('c: ', c)
-        for c in combination:
-            b[ c[1], c[2] ] = 1
-            if c[2] != 0:
-                nz_frets.append( c[2] )
-        # check if nz frets constitute a doable box
-        doable_box = True
-        if len(nz_frets) > 1:
-            nz_frets_np = np.array( nz_frets )
-            if np.max( nz_frets_np ) - np.min( nz_frets_np ) > 6:
-                doable_box = False
-                # print('nz_frets: ', nz_frets)
-                # print('non doable: ', combination)
-        if doable_box:
-            all_binary_fretboards.append( b )
+    while len( all_binary_fretboards ) == 0:
+        combinations2keep = make_combinations2keep( all_structs, notes2keep )
+        # keep structures as [pitch, string, fret]
+        all_binary_fretboards = make_binary_fretboards( combinations2keep )
+        if len( all_binary_fretboards ) == 0:
+            print('no binary fretboards retained - reducing notes2keep to: ' + str(notes2keep-1))
+            notes2keep -= 1
     return all_binary_fretboards
     # return combinations2keep
 # end make_all_binary_tabs_for_binary_midi
@@ -227,7 +249,7 @@ def midi_and_flat_tab_decision(m, t):
     all_binary_tabs = make_all_binary_tabs_for_binary_midi( m )
     # print('len( all_binary_tabs): ', len(all_binary_tabs))
     if len(all_binary_tabs) == 0:
-        print(m)
+        print('problem with midi input:', m)
     all_probs = np.zeros( len(all_binary_tabs) )
     for i,b in enumerate( all_binary_tabs ):
         all_probs[i] = np.sum( b*t_full )

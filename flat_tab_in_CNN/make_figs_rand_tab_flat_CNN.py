@@ -71,7 +71,7 @@ for i in session_ids:
 
 import pandas as pd
 
-df = pd.read_csv('../models/tab_rand_flat_CNN_out/flat_tab_logger.csv', delimiter=';')
+df = pd.read_csv('../models/tab_rand_flat_CNN_out/flat_rand_tab_logger.csv', delimiter=';')
 
 losses = df[['loss','val_loss']]
 cossims = df[['cosine_similarity','val_cosine_similarity']]
