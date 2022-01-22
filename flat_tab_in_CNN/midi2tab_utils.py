@@ -17,11 +17,11 @@ def get_midi_full_fretboard():
 # end get_midi_full_fretboard
 
 def make_combinations2keep( all_structs, notes2keep ):
-    print('making combinations2keep')
+    # print('making combinations2keep')
     combinations2keep = []
     while len( combinations2keep ) == 0:
         all_combinations = list(itertools.combinations( all_structs, notes2keep ))
-        print('total combinations to examine: ', len(all_combinations))
+        # print('total combinations to examine: ', len(all_combinations))
         # print('len(all_combinations)')
         # print(len(all_combinations))
         for c in all_combinations:
@@ -39,7 +39,7 @@ def make_combinations2keep( all_structs, notes2keep ):
                 combinations2keep.append( c )
         # print('combinations2keep')
         # print(combinations2keep)
-        print('combinations to keep: ', len(combinations2keep))
+        # print('combinations to keep: ', len(combinations2keep))
         if len( combinations2keep ) == 0:
             print('no combination found - reducing notes2keep to: ' + str(notes2keep-1))
             notes2keep -= 1
@@ -47,12 +47,12 @@ def make_combinations2keep( all_structs, notes2keep ):
 # end make_combinations2keep
 
 def make_binary_fretboards( combinations2keep ):
-    print('making binary_fretboards')
+    # print('making binary_fretboards')
     all_binary_fretboards = []
     for combination in combinations2keep:
         # print('combination: ', combination)
         # keep non zero frets for observing impossibility of fingering
-        nz_frets = [];
+        nz_frets = []
         b = np.zeros( (6,25) )
         # get fret for each string
         # print('c: ', c)
