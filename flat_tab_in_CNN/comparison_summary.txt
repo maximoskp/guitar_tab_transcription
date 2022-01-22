@@ -1,0 +1,22 @@
+simple_model_simple_data:
+nomatch:  0.5772
+partial: 0.073
+match: 0.3498
+
+
+simple_model_aug_data:
+nomatch:  0.5402
+partial: 0.3342
+match: 0.1256
+
+
+aug_model_simple_data:
+nomatch:  0.4086
+partial: 0.0832
+match: 0.5082
+
+
+aug_model_aug_data:
+nomatch:  0.4332
+partial: 0.3952
+match: 0.1716
