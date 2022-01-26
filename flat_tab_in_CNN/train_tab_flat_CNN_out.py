@@ -13,6 +13,7 @@ else:
     import pickle5 as pickle
 import tensorflow as tf
 from tensorflow import keras
+import tensorflow.keras.backend as K
 import os
 import matplotlib.pyplot as plt
 sys.path.insert(1, '..')
@@ -61,7 +62,28 @@ model.add(keras.layers.Reshape([1,6,num_filters//2]))
 model.add(conv_decoder)
 model.add(out_layer)
 
-model.compile(loss='mean_squared_error', optimizer='adam', metrics=['cosine_similarity'])
+# loss_metric = tf.keras.losses.BinaryCrossentropy(
+#     from_logits=True,
+#     label_smoothing=0.0,
+#     axis=-1,
+#     reduction="auto",
+#     name="binary_crossentropy",
+# )
+
+# kl = tf.keras.losses.KLDivergence()
+
+def my_acc(y_true, y_pred):
+    # true positives
+    tp = K.sum( keras.layers.Multiply()([y_true, y_pred]) ).numpy() / K.sum(y_true).numpy()
+    # false positives
+    initializer = keras.initializers.Ones()
+    ones = initializer(shape=( y_true.shape ))
+    penalty = ones - y_true
+    fp = K.sum( keras.layers.Multiply()([penalty, y_pred]) ).numpy() / K.sum(penalty).numpy()
+    return tp / (1+fp)
+
+# model.compile(loss='mean_squared_error', optimizer='adam', metrics=['cosine_similarity'])
+model.compile(loss='mean_squared_error', optimizer='adam', metrics=[my_acc], run_eagerly=True)
 model.summary()
 
 os.makedirs( 'models/tab_flat_CNN_out', exist_ok=True )
