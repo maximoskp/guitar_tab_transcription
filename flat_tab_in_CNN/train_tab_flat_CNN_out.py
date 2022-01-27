@@ -72,18 +72,23 @@ model.add(out_layer)
 
 # kl = tf.keras.losses.KLDivergence()
 
-def my_acc(y_true, y_pred):
-    # true positives
-    tp = K.sum( keras.layers.Multiply()([y_true, y_pred]) ).numpy() / K.sum(y_true).numpy()
-    # false positives
-    initializer = keras.initializers.Ones()
-    ones = initializer(shape=( y_true.shape ))
-    penalty = ones - y_true
-    fp = K.sum( keras.layers.Multiply()([penalty, y_pred]) ).numpy() / K.sum(penalty).numpy()
-    return tp / (1+fp)
+# initializer = keras.initializers.Ones()
+# # ones = initializer(shape=( y_true.shape ))
+# ones = initializer(shape=( (16,150) ))
+# def my_acc(y_true, y_pred):
+#     # true positives
+#     tp = K.sum( keras.layers.Multiply()([y_true, y_pred]) ) / K.sum(y_true)
+#     # false positives
+#     penalty = ones - y_true
+#     fp = K.sum( keras.layers.Multiply()([penalty, y_pred]) ) / K.sum(penalty)
+#     return tp / (1+fp)
 
-# model.compile(loss='mean_squared_error', optimizer='adam', metrics=['cosine_similarity'])
-model.compile(loss='mean_squared_error', optimizer='adam', metrics=[my_acc], run_eagerly=True)
+# def my_acc(y_true, y_pred):
+#     # true positives
+#     return K.sum( y_pred ) / K.sum( y_true )
+
+model.compile(loss='mean_squared_error', optimizer='adam', metrics=['cosine_similarity'])
+# model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_percentage_error'], run_eagerly=True)
 model.summary()
 
 os.makedirs( 'models/tab_flat_CNN_out', exist_ok=True )
@@ -103,6 +108,8 @@ checkpoint_current_best = ModelCheckpoint(filepath=filepath_current_best,
                             save_best_only=True,
                             mode='min')
 
+if os.path.exists('../models/tab_flat_CNN_out/flat_tab_logger.csv'):
+    os.remove('../models/tab_flat_CNN_out/flat_tab_logger.csv')
 csv_logger = CSVLogger('../models/tab_flat_CNN_out/flat_tab_logger.csv', append=True, separator=';')
 
 history = model.fit( x_train, y_train, epochs=1000, batch_size=16,
