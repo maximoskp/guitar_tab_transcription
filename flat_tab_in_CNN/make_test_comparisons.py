@@ -48,7 +48,7 @@ def get_matches( x, y ):
     match = 0
     x = np.array(x)
     y = np.array(y)
-    if np.all( x == y ):
+    if np.all( x*y == y ):
         match = 1
     else:
         if np.any( x * y ):
