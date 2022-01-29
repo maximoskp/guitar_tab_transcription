@@ -28,7 +28,7 @@ model = keras.models.load_model( '../models/tab_flat_CNN_out/tab_flat_CNN_out_cu
 model_rand = keras.models.load_model( '../models/tab_rand_flat_CNN_out/tab_rand_flat_CNN_out_current_best.hdf5' )
 
 # keep some random samples from test data
-idxs2keep = 5000
+idxs2keep = 100
 idx = np.random.permutation(len(x_test))
 x_test = x_test[ idx[:idxs2keep] ]
 y_test = y_test[ idx[:idxs2keep] ]
@@ -61,7 +61,11 @@ def get_matches( x, y ):
 # simple model - simple data
 x_in = x_test
 y_true = y_test
-simple_model_simple_data = {'nomatch':0, 'partial':0, 'match':0}
+simple_model_simple_data = {
+    'nomatch':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0},
+    'partial':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0},
+    'match':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0}
+}
 for i in range(len(x_in)):
     print('simple_model_simple_data: ', i)
     # predict
@@ -70,14 +74,23 @@ for i in range(len(x_in)):
     decision = m2t.midi_and_flat_tab_decision(midi, y_pred[0])
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
-    simple_model_simple_data['nomatch'] += n
-    simple_model_simple_data['partial'] += p
-    simple_model_simple_data['match'] += m
+    simple_model_simple_data['nomatch'][np.sum(decision_bin)] += n
+    simple_model_simple_data['partial'][np.sum(decision_bin)] += p
+    simple_model_simple_data['match'][np.sum(decision_bin)] += m
+    # print('========================================================')
+    # print('y_true[i]: ', y_true[i])
+    # print('decision_bin: ', decision_bin)
+    # print('n, p, m: ', n, p, m)
+    # print('========================================================')
 
 # simple model - augmented data
 x_in = x_rand_test
 y_true = y_rand_test
-simple_model_aug_data = {'nomatch':0, 'partial':0, 'match':0}
+simple_model_aug_data = {
+    'nomatch':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0},
+    'partial':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0},
+    'match':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0}
+}
 for i in range(len(x_in)):
     print('simple_model_aug_data: ', i)
     # predict
@@ -86,14 +99,18 @@ for i in range(len(x_in)):
     decision = m2t.midi_and_flat_tab_decision(midi, y_pred[0])
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
-    simple_model_aug_data['nomatch'] += n
-    simple_model_aug_data['partial'] += p
-    simple_model_aug_data['match'] += m
+    simple_model_aug_data['nomatch'][np.sum(decision_bin)] += n
+    simple_model_aug_data['partial'][np.sum(decision_bin)] += p
+    simple_model_aug_data['match'][np.sum(decision_bin)] += m
 
 # aug model - simple data
 x_in = x_test
 y_true = y_test
-aug_model_simple_data = {'nomatch':0, 'partial':0, 'match':0}
+aug_model_simple_data = {
+    'nomatch':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0},
+    'partial':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0},
+    'match':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0}
+}
 for i in range(len(x_in)):
     print('aug_model_simple_data: ', i)
     # predict
@@ -102,14 +119,18 @@ for i in range(len(x_in)):
     decision = m2t.midi_and_flat_tab_decision(midi, y_pred[0])
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
-    aug_model_simple_data['nomatch'] += n
-    aug_model_simple_data['partial'] += p
-    aug_model_simple_data['match'] += m
+    aug_model_simple_data['nomatch'][np.sum(decision_bin)] += n
+    aug_model_simple_data['partial'][np.sum(decision_bin)] += p
+    aug_model_simple_data['match'][np.sum(decision_bin)] += m
 
 # aug model - augmented data
 x_in = x_rand_test
 y_true = y_rand_test
-aug_model_aug_data = {'nomatch':0, 'partial':0, 'match':0}
+aug_model_aug_data = {
+    'nomatch':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0},
+    'partial':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0},
+    'match':{1:0, 2:0, 3:0 ,4:0, 5:0, 6:0}
+}
 for i in range(len(x_in)):
     print('aug_model_aug_data: ', i)
     # predict
@@ -118,49 +139,190 @@ for i in range(len(x_in)):
     decision = m2t.midi_and_flat_tab_decision(midi, y_pred[0])
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
-    aug_model_aug_data['nomatch'] += n
-    aug_model_aug_data['partial'] += p
-    aug_model_aug_data['match'] += m
+    aug_model_aug_data['nomatch'][np.sum(decision_bin)] += n
+    aug_model_aug_data['partial'][np.sum(decision_bin)] += p
+    aug_model_aug_data['match'][np.sum(decision_bin)] += m
 
-print('\n')
-print('simple_model_simple_data:')
-comparison = simple_model_simple_data
-mtrc = comparison['nomatch']
-print('nomatch: ', str(mtrc/idxs2keep))
-mtrc = comparison['partial']
-print('partial: ' + str(mtrc/idxs2keep))
-mtrc = comparison['match']
-print('match: ' + str(mtrc/idxs2keep))
+original_stdout = sys.stdout
+with open('comparison_results.txt', 'w') as f:
+    sys.stdout = f
+    print('\n')
+    print('simple_model_simple_data:')
+    comparison = simple_model_simple_data
+    print('=======================================================')
+    for i in range(6):
+        if i == 0:
+            print('n. pitchs:  &\t', end='')
+        print(str(i+1) + ' &\t', end='')
+    print('sum') 
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['nomatch'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('nomatch:  &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['partial'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('partial:  &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['match'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('match:   &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    for i in range(6):
+        mtrc = comparison['nomatch'][i+1] + comparison['partial'][i+1] + comparison['match'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('sum:     &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+    print('')
 
-print('\n')
-print('simple_model_aug_data:')
-comparison = simple_model_aug_data
-mtrc = comparison['nomatch']
-print('nomatch: ', str(mtrc/idxs2keep))
-mtrc = comparison['partial']
-print('partial: ' + str(mtrc/idxs2keep))
-mtrc = comparison['match']
-print('match: ' + str(mtrc/idxs2keep))
+    print('\n')
+    print('simple_model_aug_data:')
+    comparison = simple_model_aug_data
+    print('=======================================================')
+    for i in range(6):
+        if i == 0:
+            print('n. pitchs:  &\t', end='')
+        print(str(i+1) + ' &\t', end='')
+    print('sum') 
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['nomatch'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('nomatch:  &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['partial'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('partial:  &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['match'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('match:   &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    for i in range(6):
+        mtrc = comparison['nomatch'][i+1] + comparison['partial'][i+1] + comparison['match'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('sum:     &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+    print('')
 
-print('\n')
-print('aug_model_simple_data:')
-comparison = aug_model_simple_data
-mtrc = comparison['nomatch']
-print('nomatch: ', str(mtrc/idxs2keep))
-mtrc = comparison['partial']
-print('partial: ' + str(mtrc/idxs2keep))
-mtrc = comparison['match']
-print('match: ' + str(mtrc/idxs2keep))
+    print('\n')
+    print('aug_model_simple_data:')
+    comparison = aug_model_simple_data
+    print('=======================================================')
+    for i in range(6):
+        if i == 0:
+            print('n. pitchs:  &\t', end='')
+        print(str(i+1) + ' &\t', end='')
+    print('sum') 
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['nomatch'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('nomatch:  &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['partial'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('partial:  &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['match'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('match:   &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    for i in range(6):
+        mtrc = comparison['nomatch'][i+1] + comparison['partial'][i+1] + comparison['match'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('sum:     &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+    print('')
 
-print('\n')
-print('aug_model_aug_data:')
-comparison = aug_model_aug_data
-mtrc = comparison['nomatch']
-print('nomatch: ', str(mtrc/idxs2keep))
-mtrc = comparison['partial']
-print('partial: ' + str(mtrc/idxs2keep))
-mtrc = comparison['match']
-print('match: ' + str(mtrc/idxs2keep))
+    print('\n')
+    print('aug_model_aug_data:')
+    comparison = aug_model_aug_data
+    print('=======================================================')
+    for i in range(6):
+        if i == 0:
+            print('n. pitchs:  &\t', end='')
+        print(str(i+1) + ' &\t', end='')
+    print('sum') 
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['nomatch'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('nomatch:  &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['partial'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('partial:  &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    tmp_sum = 0
+    for i in range(6):
+        mtrc = comparison['match'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('match:   &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+        tmp_sum += mtrc
+    print(tmp_sum)
+    for i in range(6):
+        mtrc = comparison['nomatch'][i+1] + comparison['partial'][i+1] + comparison['match'][i+1]
+        mtrc = np.round(mtrc/idxs2keep*100)/100
+        if i == 0:
+            print('sum:     &\t', end='')
+        print(str(mtrc) + ' &\t', end='')
+    print('')
+
+sys.stdout = original_stdout
 
 os.makedirs( '../data/results/', exist_ok=True )
 comparison_results = {
