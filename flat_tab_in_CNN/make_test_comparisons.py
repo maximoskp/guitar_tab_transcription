@@ -28,7 +28,7 @@ model = keras.models.load_model( '../models/tab_flat_CNN_out/tab_flat_CNN_out_cu
 model_rand = keras.models.load_model( '../models/tab_rand_flat_CNN_out/tab_rand_flat_CNN_out_current_best.hdf5' )
 
 # keep some random samples from test data
-idxs2keep = 100
+idxs2keep = 5000
 idx = np.random.permutation(len(x_test))
 x_test = x_test[ idx[:idxs2keep] ]
 y_test = y_test[ idx[:idxs2keep] ]
