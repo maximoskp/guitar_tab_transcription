@@ -80,7 +80,9 @@ def make_all_binary_tabs_for_binary_midi(m):
     all_structs = []
     f = get_midi_full_fretboard()
     # print('fretboard: ', f)
-    for i, n in enumerate(midi_notes):
+    i = 0
+    while i < len(midi_notes):
+        n = midi_notes[i]
         # print('i: ', i)
         # in case n is out of fretboard range
         n_modified = False
@@ -102,6 +104,7 @@ def make_all_binary_tabs_for_binary_midi(m):
             tmp_frets_of_note = tmp_where[1]
             for j in range(len(tmp_strings_of_note)):
                 all_structs.append( [n, tmp_strings_of_note[j], tmp_frets_of_note[j]] )
+        i += 1
     # print('all_structs: ')
     # print(all_structs)
     # make all combinations
