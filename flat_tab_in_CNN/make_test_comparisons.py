@@ -99,9 +99,10 @@ for i in range(len(x_in)):
     decision = m2t.midi_and_flat_tab_decision(midi, y_pred[0])
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
-    simple_model_aug_data['nomatch'][np.sum(decision_bin)] += n
-    simple_model_aug_data['partial'][np.sum(decision_bin)] += p
-    simple_model_aug_data['match'][np.sum(decision_bin)] += m
+    key = max( np.sum(decision_bin) , np.sum(y_true[i]) )
+    simple_model_aug_data['nomatch'][key] += n
+    simple_model_aug_data['partial'][key] += p
+    simple_model_aug_data['match'][key] += m
 
 # aug model - simple data
 x_in = x_test
