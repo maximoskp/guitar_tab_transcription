@@ -74,9 +74,10 @@ for i in range(len(x_in)):
     decision = m2t.midi_and_flat_tab_decision(midi, y_pred[0])
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
-    simple_model_simple_data['nomatch'][np.sum(decision_bin)] += n
-    simple_model_simple_data['partial'][np.sum(decision_bin)] += p
-    simple_model_simple_data['match'][np.sum(decision_bin)] += m
+    key = max( np.sum(decision_bin) , np.sum(y_true[i]) )
+    simple_model_aug_data['nomatch'][key] += n
+    simple_model_aug_data['partial'][key] += p
+    simple_model_aug_data['match'][key] += m
     # print('========================================================')
     # print('y_true[i]: ', y_true[i])
     # print('decision_bin: ', decision_bin)
@@ -120,9 +121,10 @@ for i in range(len(x_in)):
     decision = m2t.midi_and_flat_tab_decision(midi, y_pred[0])
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
-    aug_model_simple_data['nomatch'][np.sum(decision_bin)] += n
-    aug_model_simple_data['partial'][np.sum(decision_bin)] += p
-    aug_model_simple_data['match'][np.sum(decision_bin)] += m
+    key = max( np.sum(decision_bin) , np.sum(y_true[i]) )
+    simple_model_aug_data['nomatch'][key] += n
+    simple_model_aug_data['partial'][key] += p
+    simple_model_aug_data['match'][key] += m
 
 # aug model - augmented data
 x_in = x_rand_test
@@ -140,9 +142,10 @@ for i in range(len(x_in)):
     decision = m2t.midi_and_flat_tab_decision(midi, y_pred[0])
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
-    aug_model_aug_data['nomatch'][np.sum(decision_bin)] += n
-    aug_model_aug_data['partial'][np.sum(decision_bin)] += p
-    aug_model_aug_data['match'][np.sum(decision_bin)] += m
+    key = max( np.sum(decision_bin) , np.sum(y_true[i]) )
+    simple_model_aug_data['nomatch'][key] += n
+    simple_model_aug_data['partial'][key] += p
+    simple_model_aug_data['match'][key] += m
 
 original_stdout = sys.stdout
 with open('comparison_results.txt', 'w') as f:
