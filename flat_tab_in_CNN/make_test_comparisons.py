@@ -75,9 +75,9 @@ for i in range(len(x_in)):
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
     key = max( np.sum(decision_bin) , np.sum(y_true[i]) )
-    simple_model_aug_data['nomatch'][key] += n
-    simple_model_aug_data['partial'][key] += p
-    simple_model_aug_data['match'][key] += m
+    simple_model_simple_data['nomatch'][key] += n
+    simple_model_simple_data['partial'][key] += p
+    simple_model_simple_data['match'][key] += m
     # print('========================================================')
     # print('y_true[i]: ', y_true[i])
     # print('decision_bin: ', decision_bin)
@@ -122,9 +122,9 @@ for i in range(len(x_in)):
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
     key = max( np.sum(decision_bin) , np.sum(y_true[i]) )
-    simple_model_aug_data['nomatch'][key] += n
-    simple_model_aug_data['partial'][key] += p
-    simple_model_aug_data['match'][key] += m
+    aug_model_simple_data['nomatch'][key] += n
+    aug_model_simple_data['partial'][key] += p
+    aug_model_simple_data['match'][key] += m
 
 # aug model - augmented data
 x_in = x_rand_test
@@ -143,9 +143,9 @@ for i in range(len(x_in)):
     decision_bin = np.reshape( decision.astype(bool), y_true[i].shape )
     n, p, m = get_matches(y_true[i], decision_bin)
     key = max( np.sum(decision_bin) , np.sum(y_true[i]) )
-    simple_model_aug_data['nomatch'][key] += n
-    simple_model_aug_data['partial'][key] += p
-    simple_model_aug_data['match'][key] += m
+    aug_model_aug_data['nomatch'][key] += n
+    aug_model_aug_data['partial'][key] += p
+    aug_model_aug_data['match'][key] += m
 
 original_stdout = sys.stdout
 with open('comparison_results.txt', 'w') as f:
