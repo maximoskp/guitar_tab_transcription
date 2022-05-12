@@ -154,6 +154,7 @@ class GPPieceEvents:
         song = gp.parse( file_path )
         self.name = file_path.split( os.sep )[-1]
         self.track_events = []
+        self.tempo = song.tempo
         tracks = song.tracks
         aborted = False
         self.max_pitch = -1
